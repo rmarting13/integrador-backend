@@ -158,12 +158,12 @@ if __name__ == '__main__':
     obj = User(
         user_id=1,
     )
-
+    print(vars(obj))
     # User.update(obj)
     # user = User.get(obj)
     # print(user)
     # User.delete(obj)
 
-    user = User.get(obj)
-    print(type(user.creation_date))
+    # user = User.get(obj)
+    # print(type(user.creation_date))
     #print(*users, sep='\n')
