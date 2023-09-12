@@ -15,6 +15,12 @@ class UserController:
         :param user_id: (´´int´´)
         :return: A Flask Response object
         """
+        user = User(user_id=user_id)
+        result = User.get(user)
+        if result:
+            return vars(result), 200
+        else:
+            return {'error': 'Source not found'}, 404
         pass
 
     @classmethod
