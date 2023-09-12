@@ -1,7 +1,6 @@
-from ..models.exceptions import FilmNotFound, InvalidDataError
-from ..models.film_model import Film
-
 from flask import request
+
+from ..models.user import User
 
 from decimal import Decimal
 
@@ -32,7 +31,9 @@ class UserController:
         Creates a new user resource
         :return: A Flask Response object
         """
-        pass
+        data = request.json
+        User.create(User(**data))
+        return {'message': 'User created successfully'}, 201
 
     @classmethod
     def update(cls, user_id):
