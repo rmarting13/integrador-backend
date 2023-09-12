@@ -68,4 +68,6 @@ class UserController:
         :param user_id: (´´int´´)
         :return: A Flask Response object
         """
-        pass
+        user = User(user_id=user_id)
+        User.delete(user)
+        return {}, 204
