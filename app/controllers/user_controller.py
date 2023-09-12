@@ -29,7 +29,14 @@ class UserController:
         Gets all users resources
         :return: A Flask Response object
         """
-        pass
+        result = User.get_all()
+        if result:
+            users = []
+            for row in result:
+                users.append(vars(row))
+            return users, 200
+        else:
+            return {'error': 'Source not found'}, 404
 
     @classmethod
     def create(cls):
