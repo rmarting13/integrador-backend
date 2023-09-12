@@ -27,16 +27,16 @@ class DatabaseConnection:
                 password='admin',
                 host='localhost',
                 port='3306',
-                database='sakila'
+                database='chatify'
             )
         return cls._CONNECTION
 
     @classmethod
-    def execute_query(cls, query: str, params: tuple = None):
+    def execute_query(cls, query: str, params: iter =None):
         """
         Allows a specific sql query execution
         :param query: A sql query string
-        :param params: (optional) A tuple that contains the query params
+        :param params: (optional) An iterable that contains the query params
         :return: A MySQLCursor instance
         """
         cursor = cls.get_connection().cursor()
