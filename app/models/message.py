@@ -48,7 +48,7 @@ class Message:
     @classmethod
     def get_all(cls):
         """
-        Gets a collection of all Message objects existing in database
+        Gets a collection of all Message entries existing in the database
         :return: A Message list or None
         """
         pass
@@ -84,7 +84,7 @@ class Message:
     def update(cls, message):
         """
         Updates the values of the Message model entry in the database that matches the message_id provided
-        :param message: An instance of Channel
+        :param message: An instance of Message
         :return: None
         """
         pass
