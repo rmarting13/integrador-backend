@@ -43,7 +43,13 @@ class Message:
         :param message: An instance of Message with a not null message_id
         :return: Message or None
         """
-        pass
+        query = "SELECT * FROM messages WHERE message_id = %s;"
+        params = message.message_id,
+        result = db.fetch_one(query=query, params=params)
+        if result:
+            return cls(*result)
+        else:
+            return None
 
     @classmethod
     def get_all(cls):
@@ -51,7 +57,15 @@ class Message:
         Gets a collection of all Message entries existing in the database
         :return: A Message list or None
         """
-        pass
+        query = "SELECT * FROM messages"
+        result = db.fetch_all(query=query)
+        if result:
+            messages = []
+            for row in result:
+                messages.append(cls(*row))
+            return messages
+        else:
+            return None
 
     @classmethod
     def get_by_user_id(cls, message):
@@ -60,7 +74,16 @@ class Message:
         :param message: An instance of Message with a not null user_id
         :return: A Message list or None
         """
-        pass
+        query = "SELECT * FROM messages WHERE user_id = %s;"
+        params = message.user_id,
+        result = db.fetch_all(query=query, params=params)
+        if result:
+            messages = []
+            for row in result:
+                messages.append(cls(*row))
+            return messages
+        else:
+            return None
 
     @classmethod
     def get_by_channel_id(cls, message):
@@ -69,7 +92,34 @@ class Message:
         :param message: An instance of Message with a not null channel_id
         :return: A Message list or None
         """
-        pass
+        query = "SELECT * FROM messages WHERE channel_id = %s ORDER BY creation_date;"
+        params = message.channel_id,
+        result = db.fetch_all(query=query, params=params)
+        if result:
+            messages = []
+            for row in result:
+                messages.append(cls(*row))
+            return messages
+        else:
+            return None
+
+    @classmethod
+    def get_by_content(cls, message):
+        """
+        Gets all Message from database that matches the provided content
+        :param message: An instance of Message with a not null content
+        :return: A Message list or None
+        """
+        query = "SELECT * FROM messages WHERE content LIKE %s ORDER BY creation_date;"
+        params = '%'+message.content+'%',
+        result = db.fetch_all(query=query, params=params)
+        if result:
+            messages = []
+            for row in result:
+                messages.append(cls(*row))
+            return messages
+        else:
+            return None
 
     @classmethod
     def create(cls, message):
@@ -78,7 +128,9 @@ class Message:
         :param message: An instance of Message
         :return: None
         """
-        pass
+        query = "INSERT INTO messages (user_id, channel_id, content, edited) VALUES (%s, %s, %s, %s);"
+        params = message.user_id, message.channel_id, message.content, message.edited
+        db.execute_query(query=query, params=params)
 
     @classmethod
     def update(cls, message):
@@ -87,7 +139,9 @@ class Message:
         :param message: An instance of Message
         :return: None
         """
-        pass
+        query = "UPDATE messages SET content = %s, edited = True WHERE message_id = %s;"
+        params = message.content, message.message_id
+        db.execute_query(query, params=params)
 
     @classmethod
     def delete(cls, message):
@@ -96,4 +150,22 @@ class Message:
         :param message: An instance of Message
         :return: None
         """
-        pass
+        query = "DELETE FROM messages WHERE message_id = %s;"
+        params = message.message_id,
+        db.execute_query(query=query, params=params)
+
+if __name__ == '__main__':
+
+    msg = Message(
+        message_id=2,
+        user_id=1,
+        content='the fourth message'
+    )
+
+    # Message.create(msg)
+    # Message.update(msg)
+    # messages = Message.get_by_content(msg)
+    # print(message)
+    Message.delete(msg)
+    messages = Message.get_all()
+    print(*messages, sep='\n')
