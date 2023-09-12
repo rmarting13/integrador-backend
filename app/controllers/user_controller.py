@@ -55,7 +55,11 @@ class UserController:
         :param user_id: (´´int´´)
         :return: A Flask Response object
         """
-        pass
+        data = request.json
+        data['user_id'] = user_id
+        user = User(**data)
+        User.update(user)
+        return {'message': 'Film updated successfully'}, 200
 
     @classmethod
     def delete(cls, user_id):
