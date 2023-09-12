@@ -3,7 +3,7 @@ from app.database import DatabaseConnection as db
 
 class User:
     """
-    A class which represents a user's data model
+    A class which represents a User data model
     """
     def __init__(self, **kwargs):
         """
@@ -32,6 +32,9 @@ class User:
         self.profile_picture = kwargs.get('last_login', None)
 
     def __str__(self):
+        """
+        :return : A string representation of the User data object
+        """
         return f"""
                 user_id: {self.user_id}
                 status_id: {self.status_id}
@@ -47,27 +50,107 @@ class User:
 
     @classmethod
     def get(cls, user):
-        pass
+        """
+        Gets the User model entry in database that matches the user_id provided
+        :param user: An instance of User with a not null user_id
+        :return: User or None
+        """
+        query = "SELECT * FROM users WHERE user_id = %s;"
+        params = user.user_id,
+        result = db.fetch_one(query=query, params=params)
+        if result:
+            attrs = vars(user).keys()
+            items = list(zip(attrs, result))
+            kwargs = {}
+            for key, value in items:
+                kwargs.update({key: value})
+            return cls(**kwargs)
+        else:
+            return None
 
     @classmethod
     def get_all(cls):
-        pass
+        """
+        Gets a collection of all User entries existing in the database
+        :return: A User list or None
+        """
+        query = "SELECT * FROM users"
+        result = db.fetch_all(query=query)
+        if result:
+            attrs = vars(User()).keys()
+            users = []
+            for row in result:
+                kwargs = {}
+                for key, value in zip(attrs, row):
+                    kwargs.update({key: value})
+                users.append(cls(**kwargs))
+            return users
+        else:
+            return None
 
     @classmethod
     def get_by_username(cls, user):
-        pass
+        """
+        Gets all User entries from the database that matches the provided username
+        :param user: An instance of User with a not null username
+        :return: A User list or None
+        """
+        query = "SELECT * FROM users WHERE username LIKE %s"
+        params = '%' + user.username + '%',
+        result = db.fetch_all(query=query, params=params)
+        if result:
+            attrs = vars(User()).keys()
+            users = []
+            for row in result:
+                kwargs = {}
+                for key, value in zip(attrs, row):
+                    kwargs.update({key: value})
+                users.append(cls(**kwargs))
+            return users
+        else:
+            return None
 
     @classmethod
     def create(cls, user):
-        pass
+        """
+        Creates a new User model entry in the database
+        :param user: An instance of User
+        :return: None
+        """
+        query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s);"
+        params = user.username, user.password, user.email
+        db.execute_query(query=query, params=params)
 
     @classmethod
     def update(cls, user):
-        pass
+        """
+        Updates the values of the User model entry in the database that matches the user_id provided
+        :param user: An instance of User
+        :return: None
+        """
+        allowed_columns = {'status_id', 'username', 'password',
+                           'first_name', 'last_name', 'email',
+                           'phone_number', 'profile_picture'}
+        query_parts = []
+        params = []
+        for key, value in vars(user).items():
+            if key in allowed_columns and value:
+                query_parts.append(f"{key} = %s")
+                params.append(value)
+        params.append(user.user_id)
+        query = "UPDATE users SET " + ", ".join(query_parts) + " WHERE user_id = %s;"
+        db.execute_query(query, params=params)
 
     @classmethod
     def delete(cls, user):
-        pass
+        """
+        Deletes the User model entry in the database that matches the user_id provided
+        :param user: An instance of User
+        :return: None
+        """
+        query = "DELETE FROM users WHERE user_id = %s;"
+        params = user.user_id,
+        db.execute_query(query=query, params=params)
 
 
 if __name__ == '__main__':
