@@ -1,8 +1,5 @@
 from flask import request
-
 from ..models.user import User
-
-from decimal import Decimal
 
 
 class UserController:
@@ -21,7 +18,6 @@ class UserController:
             return vars(result), 200
         else:
             return {'error': 'Source not found'}, 404
-        pass
 
     @classmethod
     def get_all(cls):
@@ -59,7 +55,7 @@ class UserController:
         data['user_id'] = user_id
         user = User(**data)
         User.update(user)
-        return {'message': 'Film updated successfully'}, 200
+        return {'message': 'User updated successfully'}, 200
 
     @classmethod
     def delete(cls, user_id):
