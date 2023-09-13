@@ -69,35 +69,27 @@ class User:
             return None
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls, user=None):
         """
-        Gets a collection of all User entries existing in the database
+        Gets a collection of all User entries existing in the database or
+        those that matches user's data provided by param
         :return: A User list or None
         """
-        query = "SELECT * FROM users;"
-        result = db.fetch_all(query=query)
-        if result:
-            attrs = vars(User()).keys()
-            users = []
-            for row in result:
-                kwargs = {}
-                for key, value in zip(attrs, row):
-                    kwargs.update({key: value})
-                users.append(cls(**kwargs))
-            return users
+        if user:
+            query_parts = []
+            params = []
+            for key, value in vars(user).items():
+                if value:
+                    query_parts.append(key)
+                    params.append('%'+value+'%')
+            if len(query_parts) > 1:
+                query = f"SELECT * FROM users WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
+            else:
+                query = f"SELECT * FROM users WHERE {query_parts.pop()} LIKE %s;"
+            result = db.fetch_all(query=query, params=params)
         else:
-            return None
-
-    @classmethod
-    def get_by_username(cls, user):
-        """
-        Gets all User entries from the database that matches the provided username
-        :param user: An instance of User with a not null username
-        :return: A User list or None
-        """
-        query = "SELECT * FROM users WHERE username LIKE %s ORDER BY username;"
-        params = '%' + user.username + '%',
-        result = db.fetch_all(query=query, params=params)
+            query = f"SELECT * FROM users;"
+            result = db.fetch_all(query=query)
         if result:
             attrs = vars(User()).keys()
             users = []
@@ -155,10 +147,74 @@ class User:
 
 if __name__ == '__main__':
 
-    obj = User(
-        user_id=1,
+    obj1 = User(
+        status_id=1,
+        username='obito',
+        password='1234',
+        email='obichiha@outlook.com',
+        phone_number='3216541',
     )
-    print(vars(obj))
+    obj2 = User(
+        status_id=1,
+        username='rasen86',
+        password='1234',
+        email='naruzumaki@gmail.com',
+        phone_number='3216541',
+    )
+    obj3 = User(
+        status_id=0,
+        username='sasuke_kun21',
+        password='1234',
+        email='sasukeuchiha@gmail.com',
+        phone_number='3216541',
+    )
+    obj4 = User(
+        status_id=1,
+        username='sakurachan',
+        password='1234',
+        email='sakura_21@outlook.com',
+        phone_number='3216541',
+    )
+    obj5 = User(
+        status_id=0,
+        username='madarachiha',
+        password='1234',
+        email='madara_uchiha@outlook.com',
+        phone_number='3216541',
+    )
+    obj6 = User(
+        status_id=0,
+        username='kakashi21',
+        password='1234',
+        email='kakashisensei@gmail.com',
+        phone_number='3216541',
+    )
+    obj7 = User(
+        status_id=0,
+        username='orochi21',
+        password='1234',
+        email='orochimaru_senin@gmail.com',
+        phone_number='3216541',
+    )
+    obj8 = User(
+        status_id=1,
+        username='erosenin',
+        password='1234',
+        email='jiraija@outlook.com',
+        phone_number='3216541',
+    )
+    obj9 = User(
+        status_id=1,
+        username='innoyam',
+        password='1234',
+        email='inno_yamanaka@outlook.com',
+        phone_number='3216541',
+    )
+    # to_create = [obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]
+    # for obj in to_create:
+    #     User.create(obj)
+
+    # print(vars(obj))
     # User.update(obj)
     # user = User.get(obj)
     # print(user)
@@ -166,4 +222,7 @@ if __name__ == '__main__':
 
     # user = User.get(obj)
     # print(type(user.creation_date))
-    #print(*users, sep='\n')
+    user = User(creation_date='09-13')
+    users = User.get_all(user)
+    if users:
+        print(*users, sep=''.center(50, '-'))
