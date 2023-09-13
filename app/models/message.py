@@ -161,11 +161,14 @@ if __name__ == '__main__':
         user_id=1,
         content='the fourth message'
     )
-
+    args = {'user_id': 1, 'content': 'testing message'}
+    msg2 = Message(**args)
+    
+    print(msg2)
     # Message.create(msg)
     # Message.update(msg)
     # messages = Message.get_by_content(msg)
     # print(message)
-    Message.delete(msg)
-    messages = Message.get_all()
-    print(*messages, sep='\n')
+    # Message.delete(msg)
+    # messages = Message.get_all()
+    # print(*messages, sep='\n')
