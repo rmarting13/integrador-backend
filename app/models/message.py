@@ -43,7 +43,8 @@ class Message:
         :param message: An instance of Message with a not null message_id
         :return: Message or None
         """
-        query = "SELECT * FROM messages WHERE message_id = %s;"
+        attrs = vars(message).keys()
+        query = f"SELECT {', '.join(attrs)} FROM messages WHERE message_id = %s;"
         params = message.message_id,
         result = db.fetch_one(query=query, params=params)
         if result:
@@ -57,6 +58,7 @@ class Message:
         Gets a collection of all Message entries existing in the database
         :return: A Message list or None
         """
+        attrs = vars(Message()).keys()
         if message:
             query_parts = []
             params = []
@@ -65,12 +67,12 @@ class Message:
                     query_parts.append(key)
                     params.append('%'+value+'%')
             if len(query_parts) > 1:
-                query = f"SELECT * FROM messages WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
+                query = f"SELECT {', '.join(attrs)} FROM messages WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
             else:
-                query = f"SELECT * FROM messages WHERE {query_parts.pop()} LIKE %s;"
+                query = f"SELECT {', '.join(attrs)} FROM messages WHERE {query_parts.pop()} LIKE %s;"
             result = db.fetch_all(query=query, params=params)
         else:
-            query = "SELECT * FROM messages"
+            query = f"SELECT {', '.join(attrs)} FROM messages"
             result = db.fetch_all(query=query)
         if result:
             messages = []
