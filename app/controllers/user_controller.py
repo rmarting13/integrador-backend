@@ -8,33 +8,18 @@ class UserController:
     @classmethod
     def get(cls, user_id):
         """
-        Gets a user by id
+        Gets a user by id or by username
         :param user_id: (´´int´´)
         :return: A Flask Response object
         """
-        user = User(user_id=user_id)
-        result = User.get(user)
-        if result:
+        user = User(**request.args)
+        if user.user_id:
+            result = User.get(user)
             return vars(result), 200
-        else:
-            return {'error': 'Source not found'}, 404
-
-    @classmethod
-    def get_by_username(cls, username):
-        """
-        Gets all users that matches the username provided
-        :param username: (´´str´´)
-        :return: A Flask Response object
-        """
-        user = User(username=username)
-        result = User.get(user)
-        if result:
-            users = []
-            for row in result:
-                users.append(vars(row))
-            return users, 200
-        else:
-            return {'error': 'Source not found'}, 404
+        if user.username:
+            result = User.get_by_username(user)
+            return list(map(lambda u: vars(u), result))
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def get_all(cls):
@@ -48,8 +33,7 @@ class UserController:
             for row in result:
                 users.append(vars(row))
             return users, 200
-        else:
-            return {'error': 'Source not found'}, 404
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def create(cls):

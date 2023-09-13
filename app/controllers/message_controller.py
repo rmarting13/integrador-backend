@@ -38,8 +38,7 @@ class MessageController:
             for row in result:
                 messages.append(vars(row))
             return messages, 200
-        else:
-            return {'error': 'Source not found'}, 404
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def create(cls):
