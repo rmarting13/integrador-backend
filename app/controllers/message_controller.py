@@ -26,6 +26,9 @@ class MessageController:
         data = request.args
         if data:
             result = Message.get_all(Message(**data))
+        else:
+            result = Message.get_all()
+        if result:
             messages = []
             for row in result:
                 messages.append(vars(row))
