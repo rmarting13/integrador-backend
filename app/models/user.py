@@ -55,11 +55,11 @@ class User:
         :param user: An instance of User with a not null user_id
         :return: User or None
         """
-        query = "SELECT * FROM users WHERE user_id = %s;"
+        attrs = vars(user).keys()
+        query = f"SELECT {', '.join(attrs)} FROM users WHERE user_id = %s;"
         params = user.user_id,
         result = db.fetch_one(query=query, params=params)
         if result:
-            attrs = vars(user).keys()
             items = list(zip(attrs, result))
             kwargs = {}
             for key, value in items:
@@ -75,6 +75,7 @@ class User:
         those that matches user's data provided by param
         :return: A User list or None
         """
+        attrs = vars(User()).keys()
         if user:
             query_parts = []
             params = []
@@ -83,15 +84,15 @@ class User:
                     query_parts.append(key)
                     params.append('%'+value+'%')
             if len(query_parts) > 1:
-                query = f"SELECT * FROM users WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
+                query = (f"SELECT {', '.join(attrs)} FROM users WHERE {query_parts.pop(0)}" +
+                         ' LIKE %s AND '.join(query_parts) + ";")
             else:
-                query = f"SELECT * FROM users WHERE {query_parts.pop()} LIKE %s;"
+                query = f"SELECT {', '.join(attrs)} FROM users WHERE {query_parts.pop()} LIKE %s;"
             result = db.fetch_all(query=query, params=params)
         else:
-            query = f"SELECT * FROM users;"
+            query = f"SELECT {', '.join(attrs)} FROM users;"
             result = db.fetch_all(query=query)
         if result:
-            attrs = vars(User()).keys()
             users = []
             for row in result:
                 kwargs = {}
@@ -222,7 +223,8 @@ if __name__ == '__main__':
 
     # user = User.get(obj)
     # print(type(user.creation_date))
-    user = User(creation_date='09-13')
-    users = User.get_all(user)
-    if users:
-        print(*users, sep=''.center(50, '-'))
+    result = User.get(User(user_id=3))
+    print(result)
+    # users = User.get_all(user)
+    # if users:
+    #     print(*users, sep=''.center(50, '-'))
