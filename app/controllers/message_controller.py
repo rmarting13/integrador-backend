@@ -11,7 +11,7 @@ class MessageController:
         Gets a message by id
         :return: A Flask Response object
         """
-        message = Message(message_id)
+        message = Message(message_id=message_id)
         result = Message.get(message)
         if result:
             return vars(result), 200
