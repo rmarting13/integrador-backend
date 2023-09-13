@@ -9,15 +9,13 @@ class MessageController:
     def get(cls, message_id):
         """
         Gets a message by id
-        :param message_id: (´´int´´)
         :return: A Flask Response object
         """
         message = Message(message_id=message_id)
         result = Message.get(message)
         if result:
             return vars(result), 200
-        else:
-            return {'error': 'Source not found'}, 404
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def get_all(cls):
@@ -25,14 +23,17 @@ class MessageController:
         Gets all message resources
         :return: A Flask Response object
         """
-        result = Message.get_all()
+        data = request.args
+        if data:
+            result = Message.get_all(Message(**data))
+        else:
+            result = Message.get_all()
         if result:
             messages = []
             for row in result:
                 messages.append(vars(row))
             return messages, 200
-        else:
-            return {'error': 'Source not found'}, 404
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def create(cls):

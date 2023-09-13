@@ -16,8 +16,7 @@ class UserController:
         result = User.get(user)
         if result:
             return vars(result), 200
-        else:
-            return {'error': 'Source not found'}, 404
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def get_all(cls):
@@ -25,14 +24,14 @@ class UserController:
         Gets all users resources
         :return: A Flask Response object
         """
-        result = User.get_all()
-        if result:
-            users = []
-            for row in result:
-                users.append(vars(row))
-            return users, 200
+        data = request.args
+        if data:
+            result = User.get_all(User(**data))
         else:
-            return {'error': 'Source not found'}, 404
+            result = User.get_all()
+        if result:
+            return list(map(lambda u: vars(u), result)), 200
+        return {'error': 'Source not found'}, 404
 
     @classmethod
     def create(cls):

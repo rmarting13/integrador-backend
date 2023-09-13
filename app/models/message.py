@@ -43,7 +43,8 @@ class Message:
         :param message: An instance of Message with a not null message_id
         :return: Message or None
         """
-        query = "SELECT * FROM messages WHERE message_id = %s;"
+        attrs = vars(message).keys()
+        query = f"SELECT {', '.join(attrs)} FROM messages WHERE message_id = %s;"
         params = message.message_id,
         result = db.fetch_one(query=query, params=params)
         if result:
@@ -52,67 +53,27 @@ class Message:
             return None
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls, message=None):
         """
         Gets a collection of all Message entries existing in the database
         :return: A Message list or None
         """
-        query = "SELECT * FROM messages"
-        result = db.fetch_all(query=query)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
+        attrs = vars(Message()).keys()
+        if message:
+            query_parts = []
+            params = []
+            for key, value in vars(message).items():
+                if value:
+                    query_parts.append(key)
+                    params.append('%'+value+'%')
+            if len(query_parts) > 1:
+                query = f"SELECT {', '.join(attrs)} FROM messages WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
+            else:
+                query = f"SELECT {', '.join(attrs)} FROM messages WHERE {query_parts.pop()} LIKE %s;"
+            result = db.fetch_all(query=query, params=params)
         else:
-            return None
-
-    @classmethod
-    def get_by_user_id(cls, message):
-        """
-        Gets all Message from database that matches the provided user_id
-        :param message: An instance of Message with a not null user_id
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE user_id = %s;"
-        params = message.user_id,
-        result = db.fetch_all(query=query, params=params)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
-        else:
-            return None
-
-    @classmethod
-    def get_by_channel_id(cls, message):
-        """
-        Gets all Message from database that matches the provided channel_id
-        :param message: An instance of Message with a not null channel_id
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE channel_id = %s ORDER BY creation_date;"
-        params = message.channel_id,
-        result = db.fetch_all(query=query, params=params)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
-        else:
-            return None
-
-    @classmethod
-    def get_by_content(cls, message):
-        """
-        Gets all Message from database that matches the provided content
-        :param message: An instance of Message with a not null content
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE content LIKE %s ORDER BY creation_date;"
-        params = '%'+message.content+'%',
-        result = db.fetch_all(query=query, params=params)
+            query = f"SELECT {', '.join(attrs)} FROM messages"
+            result = db.fetch_all(query=query)
         if result:
             messages = []
             for row in result:
@@ -161,11 +122,15 @@ if __name__ == '__main__':
         user_id=1,
         content='the fourth message'
     )
-
+    args = {'user_id': 1, 'content': 'testing message'}
+    msg2 = Message(**args)
+    
+    # print(msg2)
     # Message.create(msg)
     # Message.update(msg)
     # messages = Message.get_by_content(msg)
     # print(message)
-    Message.delete(msg)
+    # Message.delete(msg)
     messages = Message.get_all()
-    print(*messages, sep='\n')
+    if messages:
+        print(*messages, sep='\n')
