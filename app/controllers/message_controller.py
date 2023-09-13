@@ -6,24 +6,15 @@ class MessageController:
     """Message controller class that binds message resource requests to message data model."""
 
     @classmethod
-    def get(cls):
+    def get(cls, message_id):
         """
-        Gets a message
+        Gets a message by id
         :return: A Flask Response object
         """
-        message = Message(**request.args)
-        if message.message_id:
-            result = Message.get(message)
+        message = Message(message_id)
+        result = Message.get(message)
+        if result:
             return vars(result), 200
-        if message.user_id:
-            result = Message.get_by_user_id(message)
-            return list(map(lambda m: vars(m), result)), 200
-        if message.channel_id:
-            result = Message.get_by_channel_id(message)
-            return list(map(lambda m: vars(m), result)), 200
-        if message.content:
-            result = Message.get_by_content(message)
-            return list(map(lambda m: vars(m), result)), 200
         return {'error': 'Source not found'}, 404
 
     @classmethod
@@ -32,8 +23,9 @@ class MessageController:
         Gets all message resources
         :return: A Flask Response object
         """
-        result = Message.get_all()
-        if result:
+        data = request.args
+        if data:
+            result = Message.get_all(Message(**data))
             messages = []
             for row in result:
                 messages.append(vars(row))

@@ -25,7 +25,6 @@ class UserController:
         :return: A Flask Response object
         """
         data = request.args
-        user = None
         if data:
             result = User.get_all(User(**data))
         else:
