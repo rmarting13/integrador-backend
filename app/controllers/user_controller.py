@@ -6,7 +6,7 @@ class UserController:
     """User controller class that binds user resource requests to user data model."""
 
     @classmethod
-    def get(cls, user_id):
+    def get_by_id(cls, user_id):
         """
         Gets a user by id
         :param user_id: (´´int´´)
@@ -16,6 +16,23 @@ class UserController:
         result = User.get(user)
         if result:
             return vars(result), 200
+        else:
+            return {'error': 'Source not found'}, 404
+
+    @classmethod
+    def get_by_username(cls, username):
+        """
+        Gets all users that matches the username provided
+        :param username: (´´str´´)
+        :return: A Flask Response object
+        """
+        user = User(username=username)
+        result = User.get(user)
+        if result:
+            users = []
+            for row in result:
+                users.append(vars(row))
+            return users, 200
         else:
             return {'error': 'Source not found'}, 404
 
