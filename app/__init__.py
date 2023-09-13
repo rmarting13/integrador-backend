@@ -1,7 +1,8 @@
 from flask import Flask
 from config import Config
 from flask_cors import CORS
-from routes.error_handlers import errors
+from app.routes.error_handlers import errors
+
 
 def init_app():
     """Crea y configura la aplicación Flask"""
