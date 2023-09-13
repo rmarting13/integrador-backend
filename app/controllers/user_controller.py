@@ -6,7 +6,7 @@ class UserController:
     """User controller class that binds user resource requests to user data model."""
 
     @classmethod
-    def get_by_id(cls, user_id):
+    def get(cls, user_id):
         """
         Gets a user by id
         :param user_id: (´´int´´)
