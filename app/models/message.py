@@ -52,67 +52,26 @@ class Message:
             return None
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls, message):
         """
         Gets a collection of all Message entries existing in the database
         :return: A Message list or None
         """
-        query = "SELECT * FROM messages"
-        result = db.fetch_all(query=query)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
+        if message:
+            query_parts = []
+            params = []
+            for key, value in vars(message).items():
+                if value:
+                    query_parts.append(key)
+                    params.append('%'+value+'%')
+            if len(query_parts) > 1:
+                query = f"SELECT * FROM messages WHERE {query_parts.pop(0)}"+' LIKE %s AND '.join(query_parts) + ";"
+            else:
+                query = f"SELECT * FROM messages WHERE {query_parts.pop()} LIKE %s;"
+            result = db.fetch_all(query=query, params=params)
         else:
-            return None
-
-    @classmethod
-    def get_by_user_id(cls, message):
-        """
-        Gets all Message from database that matches the provided user_id
-        :param message: An instance of Message with a not null user_id
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE user_id = %s;"
-        params = message.user_id,
-        result = db.fetch_all(query=query, params=params)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
-        else:
-            return None
-
-    @classmethod
-    def get_by_channel_id(cls, message):
-        """
-        Gets all Message from database that matches the provided channel_id
-        :param message: An instance of Message with a not null channel_id
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE channel_id = %s ORDER BY creation_date;"
-        params = message.channel_id,
-        result = db.fetch_all(query=query, params=params)
-        if result:
-            messages = []
-            for row in result:
-                messages.append(cls(*row))
-            return messages
-        else:
-            return None
-
-    @classmethod
-    def get_by_content(cls, message):
-        """
-        Gets all Message from database that matches the provided content
-        :param message: An instance of Message with a not null content
-        :return: A Message list or None
-        """
-        query = "SELECT * FROM messages WHERE content LIKE %s ORDER BY creation_date;"
-        params = '%'+message.content+'%',
-        result = db.fetch_all(query=query, params=params)
+            query = "SELECT * FROM messages"
+            result = db.fetch_all(query=query)
         if result:
             messages = []
             for row in result:
