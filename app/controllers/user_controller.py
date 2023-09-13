@@ -24,13 +24,14 @@ class UserController:
         Gets all users resources
         :return: A Flask Response object
         """
-        user = User(**request.args)
-        if user.username:
-            result = User.get(user)
-            return vars(result), 200
-        if user.username:
-            result = User.get_by_username(user)
-            return list(map(lambda u: vars(u), result))
+        data = request.args
+        user = None
+        if data:
+            result = User.get_all(User(**data))
+        else:
+            result = User.get_all()
+        if result:
+            return list(map(lambda u: vars(u), result)), 200
         return {'error': 'Source not found'}, 404
 
     @classmethod
