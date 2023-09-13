@@ -1,10 +1,17 @@
+from dotenv import dotenv_values
+
+
 class Config:
+    config = dotenv_values('.env')
+
+    SECRET_KEY = config.get('SECRET_KEY')
     SERVER_NAME = "127.0.0.1:5000"
     DEBUG = True
-    DATABASE_NAME = 'chatify'
-    DATABASE_USERNAME = 'admin'
-    DATABASE_PASSWORD = 'admin'
-    DATABASE_HOST = 'localhost'
-    DATABASE_PORT = '3306'
+
+    DATABASE_USERNAME = config.get('DATABASE_USERNAME')
+    DATABASE_PASSWORD = config.get('DATABASE_PASSWORD')
+    DATABASE_HOST = config.get('DATABASE_HOST')
+    DATABASE_PORT = config.get('DATABASE_PORT')
+
     TEMPLATE_FOLDER = "templates/"
     STATIC_FOLDER = "static_folder/"

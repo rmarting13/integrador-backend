@@ -74,7 +74,7 @@ class User:
         Gets a collection of all User entries existing in the database
         :return: A User list or None
         """
-        query = "SELECT * FROM users"
+        query = "SELECT * FROM users;"
         result = db.fetch_all(query=query)
         if result:
             attrs = vars(User()).keys()
@@ -95,7 +95,7 @@ class User:
         :param user: An instance of User with a not null username
         :return: A User list or None
         """
-        query = "SELECT * FROM users WHERE username LIKE %s"
+        query = "SELECT * FROM users WHERE username LIKE %s ORDER BY username;"
         params = '%' + user.username + '%',
         result = db.fetch_all(query=query, params=params)
         if result:
@@ -158,12 +158,12 @@ if __name__ == '__main__':
     obj = User(
         user_id=1,
     )
-
+    print(vars(obj))
     # User.update(obj)
     # user = User.get(obj)
     # print(user)
     # User.delete(obj)
 
-    user = User.get(obj)
-    print(type(user.creation_date))
+    # user = User.get(obj)
+    # print(type(user.creation_date))
     #print(*users, sep='\n')
