@@ -52,7 +52,7 @@ class Message:
             return None
 
     @classmethod
-    def get_all(cls, message):
+    def get_all(cls, message=None):
         """
         Gets a collection of all Message entries existing in the database
         :return: A Message list or None
@@ -123,11 +123,12 @@ if __name__ == '__main__':
     args = {'user_id': 1, 'content': 'testing message'}
     msg2 = Message(**args)
     
-    print(msg2)
+    # print(msg2)
     # Message.create(msg)
     # Message.update(msg)
     # messages = Message.get_by_content(msg)
     # print(message)
     # Message.delete(msg)
-    # messages = Message.get_all()
-    # print(*messages, sep='\n')
+    messages = Message.get_all()
+    if messages:
+        print(*messages, sep='\n')

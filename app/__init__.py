@@ -1,6 +1,7 @@
 from flask import Flask
 
 from app.routes.user_bp import user_bp
+from app.routes.message_bp import message_bp
 from config import Config
 from flask_cors import CORS
 from app.routes.error_handlers import errors
@@ -14,5 +15,6 @@ def init_app():
     # TODO: Register every controller's blueprint
     app.register_blueprint(errors)
     app.register_blueprint(user_bp)
+    app.register_blueprint(message_bp)
 
     return app
