@@ -9,4 +9,7 @@ user_bp.route('/users', methods=['GET'])(UserController.get_all)
 user_bp.route('/users/<int:user_id>', methods=['GET'])(UserController.get)
 user_bp.route('/users/<int:user_id>', methods=['PUT'])(UserController.update)
 user_bp.route('/users/<int:user_id>', methods=['DELETE'])(UserController.delete)
+user_bp.route('/users/login', methods=['POST'])(UserController.login)
+user_bp.route('/users/logout', methods=['GET'])(UserController.logout)
+user_bp.route('/users/profile', methods=['GET'])(UserController.show_profile)
 

@@ -1,9 +1,38 @@
-from flask import request
+from flask import request, session
+from flask_cors import cross_origin
+
 from ..models.user import User
 
 
 class UserController:
     """User controller class that binds user resource requests to user data model."""
+
+    @classmethod
+    def login(cls):
+        data = request.json
+        user = User(
+            username=data.get('username'),
+            password=data.get('password')
+        )
+        if User.is_registered(user):
+            session['username'] = data.get('username')
+            # session['SameSite'] = True
+            return {"message": "Successfully logged in"}, 200
+        return {"error": "Wrong username or password"}, 401
+
+    @classmethod
+    def logout(cls):
+        session.pop('username', None)
+        return {"message": "Successfully logged out"}, 200
+
+    @classmethod
+    def show_profile(cls):
+        username = session.get('username')
+        user = User.get_all(User(username=username))
+        if user:
+            return vars(user.pop(0)), 200
+        else:
+            return {"error": "User data not found"}, 404
 
     @classmethod
     def get(cls, user_id):

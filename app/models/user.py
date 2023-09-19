@@ -49,6 +49,16 @@ class User:
                 """
 
     @classmethod
+    def is_registered(cls, user):
+        query = "SELECT user_id FROM users WHERE username = %s AND password = %s;"
+        params = (user.username, user.password)
+        result = db.fetch_one(query, params=params)
+        print(result)
+        if result:
+            return True
+        return False
+
+    @classmethod
     def get(cls, user):
         """
         Gets the User model entry in database that matches the user_id provided
@@ -223,8 +233,8 @@ if __name__ == '__main__':
 
     # user = User.get(obj)
     # print(type(user.creation_date))
-    result = User.get(User(user_id=3))
-    print(result)
+    result = User.get_all(User(username='paumarigonz'))
+    print(result[0])
     # users = User.get_all(user)
     # if users:
     #     print(*users, sep=''.center(50, '-'))
