@@ -1,5 +1,5 @@
 from flask import Blueprint
-from app.models.exceptions import Forbidden, ServerError
+from app.models.exceptions import Forbidden, ServerError, BadRequest, NotFound
 
 errors = Blueprint("errors", __name__)
 
@@ -13,6 +13,12 @@ def handle_forbidden(error):
 def handle_server_error(error):
     return error.get_response()
 
+@errors.app_errorhandler(BadRequest)
+def handle_BadRequest(error):
+    return error.get_response()
 
+@errors.app_errorhandler(NotFound)
+def handle_NotFound(error):
+    return error.get_response()
 
 
