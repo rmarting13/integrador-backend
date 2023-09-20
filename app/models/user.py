@@ -53,9 +53,8 @@ class User:
         query = "SELECT user_id FROM users WHERE username = %s AND password = %s;"
         params = (user.username, user.password)
         result = db.fetch_one(query, params=params)
-        print(result)
         if result:
-            return True
+            return result[0]
         return False
 
     @classmethod
@@ -233,7 +232,7 @@ if __name__ == '__main__':
 
     # user = User.get(obj)
     # print(type(user.creation_date))
-    result = User.get_all(User(username='paumarigonz'))
+    result = User.get_all(User(username='martin'))
     print(result[0])
     # users = User.get_all(user)
     # if users:

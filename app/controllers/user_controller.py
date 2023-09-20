@@ -14,8 +14,10 @@ class UserController:
             username=data.get('username'),
             password=data.get('password')
         )
-        if User.is_registered(user):
+        id = User.is_registered(user)
+        if id:
             session['username'] = data.get('username')
+            session['user_id'] = id
             # session['SameSite'] = True
             return {"message": "Successfully logged in"}, 200
         return {"error": "Wrong username or password"}, 401
@@ -23,6 +25,7 @@ class UserController:
     @classmethod
     def logout(cls):
         session.pop('username', None)
+        session.pop('user_id', None)
         return {"message": "Successfully logged out"}, 200
 
     @classmethod
@@ -73,14 +76,13 @@ class UserController:
         return {'message': 'User created successfully'}, 201
 
     @classmethod
-    def update(cls, user_id):
+    def update(cls):
         """
         Updates a user resource by id
-        :param user_id: (´´int´´)
         :return: A Flask Response object
         """
         data = request.json
-        data['user_id'] = user_id
+        data['user_id'] = session.get('user_id')
         user = User(**data)
         User.update(user)
         return {'message': 'User updated successfully'}, 200
