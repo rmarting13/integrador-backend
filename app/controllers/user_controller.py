@@ -38,6 +38,16 @@ class UserController:
             return {"error": "User data not found"}, 404
 
     @classmethod
+    def current_password(cls, pw):
+        print(pw)
+        user = User.get(User(user_id=session.get('user_id')))
+        if user.password == pw:
+            print(True)
+            return {}, 200
+        print(False)
+        return {'error': 'Invalid current password'}, 400
+
+    @classmethod
     def get(cls, user_id):
         """
         Gets a user by id

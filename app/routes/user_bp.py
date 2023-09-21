@@ -12,4 +12,5 @@ user_bp.route('/users/<int:user_id>', methods=['DELETE'])(UserController.delete)
 user_bp.route('/users/login', methods=['POST'])(UserController.login)
 user_bp.route('/users/logout', methods=['GET'])(UserController.logout)
 user_bp.route('/users/profile', methods=['GET'])(UserController.show_profile)
+user_bp.route('/users/pass/<string:pw>', methods=['GET'])(UserController.current_password)
 
