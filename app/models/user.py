@@ -29,7 +29,7 @@ class User:
         self.phone_number = kwargs.get('phone_number', None)
         self.creation_date = kwargs.get('creation_date', None)
         self.last_login = kwargs.get('last_login', None)
-        self.profile_picture = kwargs.get('last_login', None)
+        self.profile_picture = kwargs.get('profile_picture', None)
 
     def __str__(self):
         """
@@ -55,6 +55,15 @@ class User:
         result = db.fetch_one(query, params=params)
         if result:
             return result[0]
+        return False
+
+    @classmethod
+    def already_exists(cls, user):
+        query = "SELECT username, email FROM users WHERE username = %s AND email = %s;"
+        params = (user.username, user.email)
+        result = db.fetch_one(query=query, params=params)
+        if result:
+            return True
         return False
 
     @classmethod

@@ -43,7 +43,7 @@ class UserController:
         user = User.get(User(user_id=session.get('user_id')))
         if user.password == pw:
             print(True)
-            return {}, 200
+            return {'message': 'Current password matches correctly'}, 200
         print(False)
         return {'error': 'Invalid current password'}, 400
 
@@ -82,8 +82,11 @@ class UserController:
         :return: A Flask Response object
         """
         data = request.json
-        User.create(User(**data))
-        return {'message': 'User created successfully'}, 201
+        user = User(**data)
+        if not User.already_exists(user):
+            User.create(user)
+            return {'message': 'User created successfully'}, 201
+        return {'error': 'Username and email already exists'}, 400
 
     @classmethod
     def update(cls):
@@ -92,6 +95,8 @@ class UserController:
         :return: A Flask Response object
         """
         data = request.json
+        file = request.files.get('file', None)
+        print(file)
         data['user_id'] = session.get('user_id')
         user = User(**data)
         User.update(user)
