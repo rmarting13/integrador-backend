@@ -10,6 +10,7 @@ class Config:
     SERVER_NAME = "127.0.0.1:5000"
     DEBUG = True
 
+    DATABASE_NAME = config.get('DATABASE_NAME')
     DATABASE_USERNAME = config.get('DATABASE_USERNAME')
     DATABASE_PASSWORD = config.get('DATABASE_PASSWORD')
     DATABASE_HOST = config.get('DATABASE_HOST')

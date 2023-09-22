@@ -48,6 +48,11 @@ class UserController:
         return {'error': 'Invalid current password'}, 400
 
     @classmethod
+    def upload_file(cls):
+        file = request.files['file']
+        print(file)
+
+    @classmethod
     def get(cls, user_id):
         """
         Gets a user by id
@@ -94,12 +99,14 @@ class UserController:
         Updates a user resource by id
         :return: A Flask Response object
         """
-        data = request.json
-        file = request.files.get('file', None)
+        # data = request.json
+        print(request.files)
+        file = request.files['file']
         print(file)
-        data['user_id'] = session.get('user_id')
-        user = User(**data)
-        User.update(user)
+        # file.save('../')
+        # # data['user_id'] = session.get('user_id')
+        # user = User(user_id=session.get('user_id'), profile_picture=file)
+        # User.update(user)
         return {'message': 'User updated successfully'}, 200
 
     @classmethod

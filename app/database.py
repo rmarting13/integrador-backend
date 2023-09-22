@@ -15,19 +15,12 @@ class DatabaseConnection:
         :return: A MySQLConnection instance
         """
         if cls._CONNECTION is None:
-            # cls._CONNECTION = conn.connect(
-            #     user=Config.DATABASE_USERNAME,
-            #     password=Config.DATABASE_PASSWORD,
-            #     host=Config.DATABASE_HOST,
-            #     port=Config.DATABASE_PORT,
-            #     database=Config.DATABASE_NAME
-            # )
             cls._CONNECTION = conn.connect(
-                user='root',
-                password='admin',
-                host='localhost',
-                port='3306',
-                database='chatify'
+            user=Config.DATABASE_USERNAME,
+            password=Config.DATABASE_PASSWORD,
+            host=Config.DATABASE_HOST,
+            port=Config.DATABASE_PORT,
+            database=Config.DATABASE_NAME
             )
         return cls._CONNECTION
 
