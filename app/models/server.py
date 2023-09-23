@@ -1,5 +1,6 @@
 from app.database import DatabaseConnection as db
 
+
 class Server:
 
     """A class which resprsent a Server data model
@@ -129,19 +130,31 @@ class Server:
         db.execute_query(query=query, params=param)
 
     @classmethod
-    def filtrar_server(cls, nam):
+    def filtrar_server(cls, serv):
         """
 
+        :param serv: An instance of Server
+        :return: A Server list or None
         """
-        pass
+        query = "SELECT * FROM servers WHERE name LIKE %s"
+        nam = serv.name,
+        param = f"%{nam}%"
+        result = db.fetch_all(query=query,params=param)
+        if result:
+            return result
+        else: 
+            return None  
 
     @classmethod
-    def get_all_server_ofUser(cls, user_id):
+    def get_all_server_ofUser(cls, serv):
         """
         
+        :param serv: An instance of Server
+        :return: A Server list or None
         """
-        query = "SELECT * FROM servers WHERE server_id IN (SELECT server_id FROM user_roles_servers WHERE user_id = %s);"
-        result = db.fetch_all(query=query, params=user_id)
+        query = "SELECT s.name FROM servers s INNER JOIN user_roles_servers urs ON s.server_id = urs.server_id INNER JOIN users u ON u.user_id = urs.user_id WHERE s.server_id = %s;"
+        param = serv.server_id,
+        result = db.fetch_all(query=query, params=param)
         if result:
             return result
         else:
