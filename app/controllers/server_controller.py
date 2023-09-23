@@ -61,3 +61,24 @@ class ServerController:
         serv = Server(server_id=server_id)
         Server.delete_server(serv)
         return {}, 204
+
+    @classmethod
+    def filtrer_server(cls, name):
+        """
+        
+        """
+        serv = Server (name=name)
+        result = Server.filtrar_server(serv)
+        if result:
+            return result
+
+    @classmethod
+    def get_all_server_ofUser(cls, server_id):
+        """
+        
+        """
+        serv = Server(server_id=server_id)
+        result = Server.get_all_server_ofUser(serv)
+        if result:
+            return result, 200
+        else :return {'error': 'Source not found'}, 404

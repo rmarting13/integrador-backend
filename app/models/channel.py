@@ -127,13 +127,29 @@ class Channel:
 
     
     @classmethod
-    def filtrar_channel(cls, nam):
-        pass
+    def filtrar_channel(cls, chan):
+        """
+        :param chan: An instance of channel
+        :return: None or list of Channel
+        """
+        query = "SELECT * FROM channels WHERE name LIKE %s"
+        nam = chan.name,
+        param = f"%{nam}%"
+        result = db.fetch_all(query=query, params=param)
+        if result:
+            return result
+        else: 
+            return None 
     
     @classmethod
-    def get_all_channel_ofServer(cls, serv):
+    def get_all_channel_ofServer(cls, chan):
+        """
+        
+        :param chan: An instance of channel
+        :return: None or list of Channel
+        """
         query = "SELECT * FROM channels WHERE server_id=%s;"
-        params = serv.server_id
+        params = chan.server_id
         result = db.fetch_all(query=query, params=params)
         if result:
             return result

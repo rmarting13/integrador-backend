@@ -8,4 +8,6 @@ server_bp.route('/servers', methods=['GET'])(ServerController.get_all)
 server_bp.route('/servers/<int:server_id>', methods=['GET'])(ServerController.get)
 server_bp.route('/servers/<int:server_id>', methods=['PUT'])(ServerController.update)
 server_bp.route('/servers/<int:server_id>', methods=['DELETE'])(ServerController.delete)
+server_bp.route('/servers/', methods=['GET'])(ServerController.filtrer_server)
+server_bp.route('/servers/', methods=['GET'])(ServerController.get_all_server_ofUser)
 

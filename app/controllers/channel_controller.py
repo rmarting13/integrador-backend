@@ -63,3 +63,23 @@ class ChannelController:
         chan = Channel(channel_id=channel_id)
         Channel.delete_channel(chan)
         return {}, 204
+    
+    @classmethod
+    def filtre_channel (cls, name):
+        """
+        """
+        chan = Channel(name=name)
+        result = Channel.filtrar_channel(chan)
+        if result:
+            return result
+        
+    @classmethod
+    def get_all_channel_server (cls, server_id):
+        """
+        
+        """
+        chan = Channel(server_id=server_id)
+        result = Channel.get_all_channel_ofServer(chan)
+        if result:
+            return result, 200
+        else: return {'error': 'Source not found'}, 404
