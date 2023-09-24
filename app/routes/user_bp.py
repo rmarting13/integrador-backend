@@ -14,4 +14,5 @@ user_bp.route('/users/logout', methods=['GET'])(UserController.logout)
 user_bp.route('/users/profile', methods=['GET'])(UserController.show_profile)
 user_bp.route('/users/pass/<string:pw>', methods=['GET'])(UserController.current_password)
 user_bp.route('/users/upload', methods=['POST', 'PUT'])(UserController.upload_file)
+user_bp.route('/users/download', methods=['GET'])(UserController.download_file)
 

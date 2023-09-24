@@ -73,18 +73,33 @@ class User:
         :param user: An instance of User with a not null user_id
         :return: User or None
         """
-        attrs = vars(user).keys()
-        query = f"SELECT {', '.join(attrs)} FROM users WHERE user_id = %s;"
+        query = """SELECT user_id, status_id, username, password, email, first_name, last_name, creation_date, last_login
+                   FROM users WHERE user_id = %s;"""
         params = user.user_id,
         result = db.fetch_one(query=query, params=params)
         if result:
-            items = list(zip(attrs, result))
-            kwargs = {}
-            for key, value in items:
-                kwargs.update({key: value})
-            return cls(**kwargs)
+            return User(
+                user_id=result[0],
+                status_id=result[1],
+                username=result[2],
+                password=result[3],
+                email=result[4],
+                first_name=result[5],
+                last_name=result[6],
+                creation_date=result[7],
+                last_login=result[8]
+            )
         else:
             return None
+
+    @classmethod
+    def get_picture(cls, user):
+        query = "SELECT profile_picture FROM users WHERE user_id = %s;"
+        params = user.user_id,
+        result = db.fetch_one(query=query, params=params)
+        if result:
+            return User(user_id=user.user_id, profile_picture=result[0])
+        return None
 
     @classmethod
     def get_all(cls, user=None):

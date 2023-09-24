@@ -1,6 +1,8 @@
-from flask import request, session
-from flask_cors import cross_origin
+from io import BytesIO
 
+from flask import request, session, send_file, redirect
+from flask_cors import cross_origin
+import base64
 from ..models.user import User
 
 
@@ -30,12 +32,19 @@ class UserController:
 
     @classmethod
     def show_profile(cls):
-        username = session.get('username')
-        user = User.get_all(User(username=username))
+        user_id = session.get('user_id')
+        user = User.get(User(user_id=user_id))
         if user:
-            return vars(user.pop(0)), 200
+            return vars(user), 200
         else:
             return {"error": "User data not found"}, 404
+
+    @classmethod
+    def download_file(cls):
+        user_id = session['user_id']
+        user = User.get_picture(User(user_id=user_id))
+        if user:
+            return send_file(BytesIO(user.profile_picture), mimetype='image/png'), 200
 
     @classmethod
     def current_password(cls, pw):
@@ -49,8 +58,12 @@ class UserController:
 
     @classmethod
     def upload_file(cls):
-        file = request.files['file']
-        print(file)
+        file = request.files['file'].read()
+        print(type(file))
+        user_id = session['user_id']
+        user = User(user_id=user_id, profile_picture=file)
+        User.update(user)
+        return {}, 200
 
     @classmethod
     def get(cls, user_id):

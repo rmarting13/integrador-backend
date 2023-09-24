@@ -5,7 +5,7 @@ class Message:
     """
     A class which represents a Message data model
     """
-    def __init__(self, message_id=None, user_id=None, channel_id=None,
+    def __init__(self, message_id=None, user_id=None, username=None, channel_id=None,
                  content=None, creation_date=None, edited=None):
         """
 
@@ -18,6 +18,7 @@ class Message:
         """
         self.message_id = message_id
         self.user_id = user_id
+        self.username = username
         self.channel_id = channel_id
         self.content = content
         self.creation_date = creation_date
@@ -30,6 +31,7 @@ class Message:
         return f"""
                 message_id: {self.message_id}
                 user_id: {self.user_id}
+                username: {self.username}
                 channel_id: {self.channel_id}
                 content: {self.content}
                 creation_date: {self.creation_date}
@@ -72,7 +74,8 @@ class Message:
                 query = f"SELECT {', '.join(attrs)} FROM messages WHERE {query_parts.pop()} LIKE %s;"
             result = db.fetch_all(query=query, params=params)
         else:
-            query = f"SELECT {', '.join(attrs)} FROM messages"
+            query = """SELECT message_id, messages.user_id, username, channel_id, content, messages.creation_date, edited 
+                    FROM messages INNER JOIN users ON users.user_id = messages.user_id;"""
             result = db.fetch_all(query=query)
         if result:
             messages = []
@@ -122,8 +125,8 @@ if __name__ == '__main__':
         user_id=1,
         content='the fourth message'
     )
-    args = {'user_id': 1, 'content': 'testing message'}
-    msg2 = Message(**args)
+    # args = {'user_id': 1, 'content': 'testing message'}
+    # msg2 = Message(**args)
     
     # print(msg2)
     # Message.create(msg)

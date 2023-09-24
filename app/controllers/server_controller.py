@@ -5,7 +5,7 @@ class ServerController:
     """Server controller class that binds user resource requests to user data model """
 
     @classmethod
-    def create (cls):
+    def create(cls):
         """
         Creates a new server resource
         :return: A flask response object
@@ -13,8 +13,9 @@ class ServerController:
         data = request.json
         Server.create_server(Server(**data))
         return {'message': 'Server created successfully'}, 201
+
     @classmethod
-    def get (cls, server_id):
+    def get(cls, server_id):
         """
         Gets a server by id
         :param server_id: (´´int´´)
@@ -25,8 +26,9 @@ class ServerController:
         if result:
             return server.serialize(), 200
         return {'error': 'Source not found'}, 404
+
     @classmethod
-    def get_all (cls):
+    def get_all(cls):
         """
         Gets all servers resources
         :return: A Flask Response object
@@ -39,8 +41,9 @@ class ServerController:
         if result:
             return list(map(lambda u: vars(u), result)), 200
         return {'error': 'Source not found'}, 404
+
     @classmethod
-    def update (cls, server_id):
+    def update(cls, server_id):
         """
         Updates a server resource by id
         :param server_id: (´´int´´)
@@ -51,8 +54,9 @@ class ServerController:
         server = Server(**data)
         Server.update_server(server)
         return {'message': 'Server updated successfully'}, 200
+
     @classmethod
-    def delete (cls, server_id):
+    def delete(cls, server_id):
         """
         Deletes a server resource by id
         :param server_id: (´´int´´)
@@ -67,7 +71,7 @@ class ServerController:
         """
         
         """
-        serv = Server (name=name)
+        serv = Server(name=name)
         result = Server.filtrar_server(serv)
         if result:
             return result
