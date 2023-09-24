@@ -73,8 +73,8 @@ class User:
         :param user: An instance of User with a not null user_id
         :return: User or None
         """
-        query = """SELECT user_id, status_id, username, password, email, first_name, last_name, creation_date, last_login
-                   FROM users WHERE user_id = %s;"""
+        query = """SELECT user_id, status_id, username, password, email, first_name, last_name,
+                   creation_date, last_login FROM users WHERE user_id = %s;"""
         params = user.user_id,
         result = db.fetch_one(query=query, params=params)
         if result:

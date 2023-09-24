@@ -112,14 +112,10 @@ class UserController:
         Updates a user resource by id
         :return: A Flask Response object
         """
-        # data = request.json
-        print(request.files)
-        file = request.files['file']
-        print(file)
-        # file.save('../')
-        # # data['user_id'] = session.get('user_id')
-        # user = User(user_id=session.get('user_id'), profile_picture=file)
-        # User.update(user)
+        data = request.json
+        data['user_id'] = session.get('user_id')
+        user = User(**data)
+        User.update(user)
         return {'message': 'User updated successfully'}, 200
 
     @classmethod

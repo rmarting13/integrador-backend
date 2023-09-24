@@ -15,6 +15,7 @@ class DatabaseConnection:
         :return: A MySQLConnection instance
         """
         if cls._CONNECTION is None:
+            print('CREANDO NUEVA CONEXIÓN')
             cls._CONNECTION = conn.connect(
             user=Config.DATABASE_USERNAME,
             password=Config.DATABASE_PASSWORD,
@@ -32,10 +33,18 @@ class DatabaseConnection:
         :param params: (optional) An iterable that contains the query params
         :return: A MySQLCursor instance
         """
-        cursor = cls.get_connection().cursor()
-        cursor.execute(query, params)
-        cls.get_connection().commit()
-        return cursor
+        print(f'ESTADO DE LA CONEXIÓN AL EJECUTAR LA CONSULTA: {cls._CONNECTION}')
+        try:
+            cls.get_connection().autocommit = False
+            cursor = cls.get_connection().cursor()
+            cursor.execute(query, params)
+            cls.get_connection().commit()
+            cursor.close()
+        except Exception as err:
+            cls.get_connection().rollback()
+            print(f'An error happened: {err}')
+        finally:
+            cls.close_connection()
 
     @classmethod
     def fetch_one(cls, query, params=None):
@@ -45,6 +54,7 @@ class DatabaseConnection:
         :param params: (optional) A tuple that contains the query params
         :return: Next row of the query result set or None if set is empty
         """
+        print(f'ESTADO DE LA CONEXIÓN ANTES DE FETCHONE: {cls._CONNECTION}')
         cursor = cls.get_connection().cursor()
         cursor.execute(query, params)
         return cursor.fetchone()
@@ -57,6 +67,7 @@ class DatabaseConnection:
         :param params: (optional) A tuple that contains the query params
         :return: Next row of the query result set
         """
+        print(f'ESTADO DE LA CONEXIÓN ANTES DE FETCHALL: {cls._CONNECTION}')
         cursor = cls.get_connection().cursor()
         cursor.execute(query, params)
         return cursor.fetchall()
@@ -68,7 +79,7 @@ class DatabaseConnection:
         will be cleared by re-authenticating the user.
         :return: None
         """
-        if cls._CONNECTION is not None:
+        if cls._CONNECTION:
             cls._CONNECTION.close()
             cls._CONNECTION = None
 
