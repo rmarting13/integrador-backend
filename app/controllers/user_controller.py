@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from flask import request, session, send_file, redirect
+from flask import request, session, send_file
 from flask_cors import cross_origin
 import base64
 from ..models.user import User

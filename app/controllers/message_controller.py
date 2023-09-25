@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, session
 from ..models.message import Message
 
 
@@ -31,7 +31,9 @@ class MessageController:
         if result:
             messages = []
             for row in result:
-                messages.append(vars(row))
+                msg = vars(row)
+                msg['owner'] = True if row.user_id == session['user_id'] else False
+                messages.append(msg)
             return messages, 200
         return {'error': 'Source not found'}, 404
 
@@ -42,8 +44,11 @@ class MessageController:
         :return: A Flask Response object
         """
         data = request.json
-        Message.create(Message(**data))
-        return {'message': 'Message created successfully'}, 201
+        message_id = Message.create(Message(**data))
+        print(message_id)
+        msg = Message.get(Message(message_id=message_id))
+        print(msg)
+        return vars(msg), 201
 
     @classmethod
     def update(cls, message_id):
@@ -56,7 +61,7 @@ class MessageController:
         data['message_id'] = message_id
         message = Message(**data)
         Message.update(message)
-        return {}, 200
+        return {'message': 'Message updated successfully'}, 200
 
     @classmethod
     def delete(cls, message_id):

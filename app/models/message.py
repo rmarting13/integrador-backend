@@ -45,8 +45,8 @@ class Message:
         :param message: An instance of Message with a not null message_id
         :return: Message or None
         """
-        attrs = vars(message).keys()
-        query = f"SELECT {', '.join(attrs)} FROM messages WHERE message_id = %s;"
+        query = """SELECT message_id, messages.user_id, username, channel_id, content, messages.creation_date, edited 
+                    FROM messages INNER JOIN users ON users.user_id = messages.user_id WHERE message_id = %s;"""
         params = message.message_id,
         result = db.fetch_one(query=query, params=params)
         if result:
@@ -94,7 +94,7 @@ class Message:
         """
         query = "INSERT INTO messages (user_id, channel_id, content, edited) VALUES (%s, %s, %s, %s);"
         params = message.user_id, message.channel_id, message.content, message.edited
-        db.execute_query(query=query, params=params)
+        return db.execute_query(query=query, params=params)
 
     @classmethod
     def update(cls, message):

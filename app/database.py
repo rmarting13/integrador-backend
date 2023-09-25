@@ -17,11 +17,11 @@ class DatabaseConnection:
         if cls._CONNECTION is None:
             print('CREANDO NUEVA CONEXIÓN')
             cls._CONNECTION = conn.connect(
-            user=Config.DATABASE_USERNAME,
-            password=Config.DATABASE_PASSWORD,
-            host=Config.DATABASE_HOST,
-            port=Config.DATABASE_PORT,
-            database=Config.DATABASE_NAME
+                user=Config.DATABASE_USERNAME,
+                password=Config.DATABASE_PASSWORD,
+                host=Config.DATABASE_HOST,
+                port=Config.DATABASE_PORT,
+                database=Config.DATABASE_NAME
             )
         return cls._CONNECTION
 
@@ -39,7 +39,9 @@ class DatabaseConnection:
             cursor = cls.get_connection().cursor()
             cursor.execute(query, params)
             cls.get_connection().commit()
+            last_row_id = cursor.lastrowid
             cursor.close()
+            return last_row_id
         except Exception as err:
             cls.get_connection().rollback()
             print(f'An error happened: {err}')
