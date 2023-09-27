@@ -1,5 +1,7 @@
 from flask import request, session
 from ..models.message import Message
+from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
+
 
 
 class MessageController:
@@ -15,7 +17,7 @@ class MessageController:
         result = Message.get(message)
         if result:
             return vars(result), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def get_all(cls):
@@ -35,7 +37,7 @@ class MessageController:
                 msg['owner'] = True if row.user_id == session['user_id'] else False
                 messages.append(msg)
             return messages, 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def create(cls):
@@ -71,3 +73,14 @@ class MessageController:
         message = Message(message_id=message_id)
         Message.delete(message)
         return {}, 204
+
+    @classmethod
+    def get_all_messages_channel(cls, channel_id):
+        """
+        
+        """
+        message = Message(channel_id = channel_id)
+        result = Message.get_all_messages_of_channel(message)
+        if result:
+            return vars(result), 200
+        return NotFound

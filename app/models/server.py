@@ -5,21 +5,21 @@ class Server:
 
     """A class which resprsent a Server data model
     """
-    def __init__(self, server_id=None, name=None, description=None, icon=None, creation_date=None ):
+    def __init__(self, server_id=None, name=None, description=None, creation_date=None, members=1 ):
         """
         :param server_id: (``int``)
         :param name (``str``)
         :param description (``str``)
-        :param icon (``str``)
         :param creation_date (``datetime``)
+        :param members (``int``)
         """
         
         
         self.server_id = server_id
         self.name = name
         self.description = description
-        self.icon = icon
         self.creation_date = creation_date
+        self.members = members
 
     
     @classmethod
@@ -42,7 +42,6 @@ class Server:
             "server_id": self.server_id,
             "name": self.name,
             "description": self.description,
-            "icon": self.icon,
             "creation_date": str(self.creation_date)
         }
     
@@ -52,6 +51,12 @@ class Server:
            :param serv: An instance of Server
            :return: None or Server
         """
+        query1 = "SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; "
+        param = serv.server_id,
+        result = db.execute_query(query=query, params=param)
+        if result:
+            serv.members = result 
+        
         attrs = vars(serv).keys()
         query = f"SELECT {', '.join(attrs)} FROM servers WHERE server_id= %s;"
         params = serv.server_id,
@@ -71,6 +76,12 @@ class Server:
         those that matches server's data provided by param
         :return: A Server list or None
         """
+
+        query1 = "SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; "
+        param = serv.server_id,
+        result = db.execute_query(query=query, params=param)
+        if result:
+            serv.members = result
         attrs = vars(Server()).keys()
         if serv:
             query_parts = []
@@ -136,7 +147,7 @@ class Server:
         :param serv: An instance of Server
         :return: A Server list or None
         """
-        query = "SELECT * FROM servers WHERE name LIKE %s"
+        query = "SELECT server_id, name, description, creation_date FROM servers WHERE name LIKE %s"
         nam = serv.name,
         param = f"%{nam}%"
         result = db.fetch_all(query=query,params=param)
@@ -152,10 +163,17 @@ class Server:
         :param serv: An instance of Server
         :return: A Server list or None
         """
-        query = "SELECT s.name FROM servers s INNER JOIN user_roles_servers urs ON s.server_id = urs.server_id INNER JOIN users u ON u.user_id = urs.user_id WHERE s.server_id = %s;"
+        query = "SELECT s.server_id, name, description, s.creation_date FROM servers s INNER JOIN user_roles_servers urs ON s.server_id = urs.server_id INNER JOIN users u ON u.user_id = urs.user_id WHERE s.server_id = %s;"
         param = serv.server_id,
         result = db.fetch_all(query=query, params=param)
         if result:
             return result
         else:
             return None
+        
+    @classmethod
+    def unirse_aServer(cls, serv):
+        """
+        
+        """
+        query = "SElECT"

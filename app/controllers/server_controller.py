@@ -1,5 +1,6 @@
 from flask import request
 from ..models.server import Server
+from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
 
 class ServerController:
     """Server controller class that binds user resource requests to user data model """
@@ -25,8 +26,8 @@ class ServerController:
         result = Server.get_server_id(server)
         if result:
             return server.serialize(), 200
-        return {'error': 'Source not found'}, 404
-
+        return NotFound
+    
     @classmethod
     def get_all(cls):
         """
@@ -40,7 +41,7 @@ class ServerController:
             result = Server.get_all_server()
         if result:
             return list(map(lambda u: vars(u), result)), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def update(cls, server_id):
@@ -85,4 +86,14 @@ class ServerController:
         result = Server.get_all_server_ofUser(serv)
         if result:
             return result, 200
-        else :return {'error': 'Source not found'}, 404
+        else :return NotFound
+
+    @classmethod
+    def get_user_ofServer (cls, server_id):
+        """
+        """
+        serv = Server(server_id=server_id)
+        result = Server.get_user_ofServer(serv)
+        if result:
+            return result, 200
+        else: return NotFound

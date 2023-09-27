@@ -9,4 +9,4 @@ channel_bp.route('/channels/<int:channel_id>', methods=['GET'])(ChannelControlle
 channel_bp.route('/channels/<int:channel_id>', methods=['PUT'])(ChannelController.update)
 channel_bp.route('/channels/<int:channel_id>', methods=['DELETE'])(ChannelController.delete)
 channel_bp.route('/channels/', methods=['GET'])(ChannelController.filtre_channel)
-channel_bp.route('/channels/', methods=['GET'])(ChannelController.get_all_channel_server)
+channel_bp.route('/channels/server/<int:server_id>', methods=['GET'])(ChannelController.get_all_channel_server)

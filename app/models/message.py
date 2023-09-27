@@ -118,6 +118,18 @@ class Message:
         params = message.message_id,
         db.execute_query(query=query, params=params)
 
+    @classmethod
+    def get_all_messages_of_channel(cls, message):
+        """
+        
+        """
+        query = "SELECT content FROM messages WHERE channel_id = %s;"
+        params = message.channel_id,
+        result = db.fetch_all(query=query, params=params)
+        if result:
+            return result
+        else: return None
+
 if __name__ == '__main__':
 
     msg = Message(

@@ -4,6 +4,8 @@ from flask import request, session, send_file
 from flask_cors import cross_origin
 import base64
 from ..models.user import User
+from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
+
 
 
 class UserController:
@@ -37,7 +39,7 @@ class UserController:
         if user:
             return vars(user), 200
         else:
-            return {"error": "User data not found"}, 404
+            return NotFound
 
     @classmethod
     def download_file(cls):
@@ -72,7 +74,7 @@ class UserController:
         result = User.get(user)
         if result:
             return vars(result), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def get_all(cls):
@@ -87,7 +89,7 @@ class UserController:
             result = User.get_all()
         if result:
             return list(map(lambda u: vars(u), result)), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def create(cls):

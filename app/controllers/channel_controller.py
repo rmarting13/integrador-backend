@@ -1,5 +1,6 @@
 from flask import request
 from ..models.channel import Channel
+from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
 
 class ChannelController:
     """Channel controller class that binds user resource requests to user data model. """
@@ -24,7 +25,7 @@ class ChannelController:
         result = Channel.get_channel(chan)
         if result:
             return chan.serialize(), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def get_all (cls):
@@ -39,7 +40,7 @@ class ChannelController:
             result = Channel.get_all_channel()
         if result:
             return list(map(lambda u: vars(u), result)), 200
-        return {'error': 'Source not found'}, 404
+        return NotFound
 
     @classmethod
     def update (cls, channel_id):
@@ -72,6 +73,7 @@ class ChannelController:
         result = Channel.filtrar_channel(chan)
         if result:
             return result
+        else: return NotFound
         
     @classmethod
     def get_all_channel_server (cls, server_id):
@@ -82,4 +84,4 @@ class ChannelController:
         result = Channel.get_all_channel_ofServer(chan)
         if result:
             return result, 200
-        else: return {'error': 'Source not found'}, 404
+        else: return NotFound
