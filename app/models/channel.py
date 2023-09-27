@@ -132,7 +132,7 @@ class Channel:
         :param chan: An instance of channel
         :return: None or list of Channel
         """
-        query = "SELECT * FROM channels WHERE name LIKE %s"
+        query = "SELECT channel_id, server_id, name, description, creation_date FROM channels WHERE name LIKE %s"
         nam = chan.name,
         param = f"%{nam}%"
         result = db.fetch_all(query=query, params=param)
@@ -148,11 +148,13 @@ class Channel:
         :param chan: An instance of channel
         :return: None or list of Channel
         """
-        query = "SELECT * FROM channels WHERE server_id=%s;"
+        query = "SELECT channel_id, server_id, name, description, creation_date FROM channels WHERE server_id=%s;"
         params = chan.server_id
         result = db.fetch_all(query=query, params=params)
         if result:
             return result
         else: return None
+
+    
 
     
