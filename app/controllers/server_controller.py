@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, session
 from ..models.server import Server
 from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
 
@@ -11,7 +11,9 @@ class ServerController:
         Creates a new server resource
         :return: A flask response object
         """
+
         data = request.json
+        data['user_id'] = session['user_id']
         Server.create_server(Server(**data))
         return {'message': 'Server created successfully'}, 201
 
@@ -78,22 +80,13 @@ class ServerController:
             return result
 
     @classmethod
-    def get_all_server_ofUser(cls, server_id):
+    def get_all_server_ofUser(cls):
         """
         
         """
-        serv = Server(server_id=server_id)
+        serv = Server(user_id=session['user_id'])
         result = Server.get_all_server_ofUser(serv)
         if result:
             return result, 200
-        else :return NotFound
+        return NotFound
 
-    @classmethod
-    def get_user_ofServer (cls, server_id):
-        """
-        """
-        serv = Server(server_id=server_id)
-        result = Server.get_user_ofServer(serv)
-        if result:
-            return result, 200
-        else: return NotFound

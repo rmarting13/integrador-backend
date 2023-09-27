@@ -5,7 +5,7 @@ class Server:
 
     """A class which resprsent a Server data model
     """
-    def __init__(self, server_id=None, name=None, description=None, creation_date=None, members=1 ):
+    def __init__(self, server_id=None, user_id=None, name=None, description=None, creation_date=None, members=1 ):
         """
         :param server_id: (``int``)
         :param name (``str``)
@@ -14,14 +14,13 @@ class Server:
         :param members (``int``)
         """
         
-        
         self.server_id = server_id
+        self.user_id = user_id
         self.name = name
         self.description = description
         self.creation_date = creation_date
         self.members = members
 
-    
     @classmethod
     def create_server(cls, serv):
         """create a new server
@@ -30,9 +29,13 @@ class Server:
         """
         query = "INSERT INTO servers (name, description) VALUES (%s, %s);"
         params = serv.name, serv.description
+        server_id = db.execute_query(query=query, params=params)
+        query = 'INSERT INTO user_roles_servers (user_id, server_id, role_id) VALUES (%s, %s, 1);'
+        params = serv.user_id, server_id
         db.execute_query(query=query, params=params)
+        return server_id
 
-    def serialize (self):
+    def serialize(self):
         """
         Serealize object respresentation
         returns: dict
@@ -46,18 +49,13 @@ class Server:
         }
     
     @classmethod
-    def get_server_id (cls, serv):
+    def get_server_id(cls, serv):
         """Gets the Serve model entry in database that matches the server_id provided 
            :param serv: An instance of Server
            :return: None or Server
         """
-        query1 = "SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; "
-        param = serv.server_id,
-        result = db.execute_query(query=query, params=param)
-        if result:
-            serv.members = result 
-        
-        attrs = vars(serv).keys()
+
+        attrs = 'server_id', 'name', 'description', 'creation_date'
         query = f"SELECT {', '.join(attrs)} FROM servers WHERE server_id= %s;"
         params = serv.server_id,
         result = db.fetch_one (query=query, params=params)
@@ -66,8 +64,17 @@ class Server:
             kwargs = {}
             for key, value in items:
                 kwargs.update({key: value})
-            return cls(*result)
-        else: return None
+            server = cls(**kwargs)
+            query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
+                    INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
+            param = serv.server_id,
+            result = db.execute_query(query=query, params=param)
+            server.members = result
+            query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
+            result = db.execute_query(query=query, params=param)
+            server.user_id = result
+            return server
+        return None
 
     @classmethod 
     def get_all_server(cls, serv=None):
@@ -77,12 +84,7 @@ class Server:
         :return: A Server list or None
         """
 
-        query1 = "SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; "
-        param = serv.server_id,
-        result = db.execute_query(query=query, params=param)
-        if result:
-            serv.members = result
-        attrs = vars(Server()).keys()
+        attrs = 'server_id', 'name', 'description', 'creation_date'
         if serv:
             query_parts = []
             params = []
@@ -105,7 +107,16 @@ class Server:
                 kwargs = {}
                 for key, value in zip(attrs, row):
                     kwargs.update({key: value})
-                servers.append(cls(**kwargs))
+                server = cls(**kwargs)
+                query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
+                        INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
+                param = server.server_id,
+                result = db.execute_query(query=query, params=param)
+                server.members = result
+                query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
+                result = db.execute_query(query=query, params=param)
+                server.user_id = result
+                servers.append(server)
             return servers
         else:
             return None
@@ -117,7 +128,7 @@ class Server:
         :param serv: An instance of Server
         :return: None
         """
-        allowed_columns = {'name', 'description', 'icon'}
+        allowed_columns = {'name', 'description'}
         query_parts = []
         params = []
         for key, value in vars(serv).items():
@@ -154,7 +165,7 @@ class Server:
         if result:
             return result
         else: 
-            return None  
+            return None
 
     @classmethod
     def get_all_server_ofUser(cls, serv):
@@ -163,17 +174,42 @@ class Server:
         :param serv: An instance of Server
         :return: A Server list or None
         """
-        query = "SELECT s.server_id, name, description, s.creation_date FROM servers s INNER JOIN user_roles_servers urs ON s.server_id = urs.server_id INNER JOIN users u ON u.user_id = urs.user_id WHERE s.server_id = %s;"
-        param = serv.server_id,
+        attrs = 'server_id', 'name', 'description', 'creation_date'
+        query = """SELECT s.server_id, name, description, s.creation_date FROM servers s 
+                INNER JOIN user_roles_servers urs ON s.server_id = urs.server_id WHERE user_id = %s;"""
+        param = serv.user_id,
         result = db.fetch_all(query=query, params=param)
         if result:
-            return result
+            servers = []
+            for row in result:
+                kwargs = {}
+                for key, value in zip(attrs, row):
+                    kwargs.update({key: value})
+                server = cls(**kwargs)
+                query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
+                                    INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
+                param = serv.server_id,
+                result = db.execute_query(query=query, params=param)
+                server.members = result
+                query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
+                result = db.execute_query(query=query, params=param)
+                server.user_id = result
+                servers.append(server)
+            return servers
         else:
             return None
         
     @classmethod
-    def unirse_aServer(cls, serv):
+    def join_server(cls, serv):
         """
         
         """
-        query = "SElECT"
+        query = 'INSERT INTO user_roles_servers (user_id, server_id, role_id) VALUES (%s, %s, 2);'
+        params = serv.user_id, serv.server_id
+        db.execute_query(query=query, params=params)
+
+    @classmethod
+    def left_server(cls, serv):
+        query = 'DELETE FROM user_roles_servers WHERE user_id = %s AND server_id = %;'
+        params = serv.user_id, serv.server_id
+        db.execute_query(query=query, params=params)

@@ -1,21 +1,23 @@
-from flask import request
+from flask import request, session
 from ..models.channel import Channel
 from ..models.exceptions import Forbidden, ServerError, BadRequest, NotFound
+
 
 class ChannelController:
     """Channel controller class that binds user resource requests to user data model. """
     @classmethod
-    def create (cls):
+    def create(cls):
         """
         Creates a new channel resource
         :return: A flask response object
         """
         data = request.json
+        data['user_id'] = session['user_id']
         Channel.create_channel(Channel(**data))
         return {'message': 'Channel created successfully'}, 201
 
     @classmethod
-    def get (cls, channel_id):
+    def get(cls, channel_id):
         """
         Gets a channel by id
         :param channel_id: (´´int´´)
@@ -28,7 +30,7 @@ class ChannelController:
         return NotFound
 
     @classmethod
-    def get_all (cls):
+    def get_all(cls):
         """
         Gets all channels resources
         :return: A Flask Response object
@@ -43,7 +45,7 @@ class ChannelController:
         return NotFound
 
     @classmethod
-    def update (cls, channel_id):
+    def update(cls, channel_id):
         """
         Updates a channel resource by id
         :param channel_id: (´´int´´)
@@ -55,7 +57,7 @@ class ChannelController:
         Channel.update_channel(chan)
         return {'message': 'Channel updated successfully'}, 200
     @classmethod
-    def delete (cls, channel_id):
+    def delete(cls, channel_id):
         """
         Deletes a channel resource by id
         :param channel_id: (´´int´´)
@@ -76,7 +78,7 @@ class ChannelController:
         else: return NotFound
         
     @classmethod
-    def get_all_channel_server (cls, server_id):
+    def get_all_channel_server(cls, server_id):
         """
         
         """
@@ -84,4 +86,5 @@ class ChannelController:
         result = Channel.get_all_channel_ofServer(chan)
         if result:
             return result, 200
-        else: return NotFound
+        return NotFound
+

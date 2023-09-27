@@ -5,7 +5,7 @@ class Channel:
     A class which represents a Channels data model
     """
      
-    def __init__(self,channel_id=None, server_id=None, name=None, description=None,creation_date=None):
+    def __init__(self,channel_id=None, server_id=None, user_id=None, name=None, description=None,creation_date=None):
         """
         :param channel_id: (``int``)
         :param server_id: (``int``)
@@ -15,6 +15,7 @@ class Channel:
         """
         self.channel_id = channel_id
         self.server_id = server_id
+        self.user_id = user_id
         self.name = name
         self.description = description
         self.creation_date = creation_date
@@ -39,9 +40,9 @@ class Channel:
            :param chan: An instance of Channel
            :return: None
         """
-        query = "INSERT INTO channels (server_id, name, description) VALUES (%s, %s, %s);"
-        params = chan.server_id, chan.name, chan.description
-        db.execute_query(query=query, params=params)
+        query = "INSERT INTO channels (server_id, user_id, name, description) VALUES (%s, %s, %s, %s);"
+        params = chan.server_id, chan.user_id, chan.name, chan.description
+        return db.execute_query(query=query, params=params)
     
     @classmethod
     def get_channel(cls, chan):
@@ -52,14 +53,14 @@ class Channel:
         attrs = vars(chan).keys()
         query = f"SELECT {', '.join(attrs)} FROM channels WHERE channel_id= %s;"
         params = chan.channel_id,
-        result = db.fetch_one (query=query, params=params)
+        result = db.fetch_one(query=query, params=params)
         if result:
             items = list(zip(attrs, result))
             kwargs = {}
             for key, value in items:
                 kwargs.update({key: value})
             return cls(*result)
-        else: return None
+        return None
     
     @classmethod
     def get_all_channel(cls, chan=None):
@@ -148,12 +149,13 @@ class Channel:
         :param chan: An instance of channel
         :return: None or list of Channel
         """
-        query = "SELECT channel_id, server_id, name, description, creation_date FROM channels WHERE server_id=%s;"
+        attrs = vars(Channel()).keys()
+        query = f"SELECT {', '.join(attrs)} FROM channels WHERE server_id = %s;"
         params = chan.server_id
         result = db.fetch_all(query=query, params=params)
         if result:
             return result
-        else: return None
+        return None
 
     
 
