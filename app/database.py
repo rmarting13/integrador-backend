@@ -59,7 +59,8 @@ class DatabaseConnection:
         print(f'ESTADO DE LA CONEXIÓN ANTES DE FETCHONE: {cls._CONNECTION}')
         cursor = cls.get_connection().cursor()
         cursor.execute(query, params)
-        return cursor.fetchone()
+        result = cursor.fetchone()
+        return result
 
     @classmethod
     def fetch_all(cls, query, params=None):

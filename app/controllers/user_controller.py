@@ -48,18 +48,14 @@ class UserController:
 
     @classmethod
     def current_password(cls, pw):
-        print(pw)
         user = User.get(User(user_id=session.get('user_id')))
         if user.password == pw:
-            print(True)
             return {'message': 'Current password matches correctly'}, 200
-        print(False)
         return {'error': 'Invalid current password'}, 400
 
     @classmethod
     def upload_file(cls):
         file = request.files['file'].read()
-        print(type(file))
         user_id = session['user_id']
         user = User(user_id=user_id, profile_picture=file)
         User.update(user)

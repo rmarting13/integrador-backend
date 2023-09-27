@@ -44,11 +44,9 @@ class MessageController:
         :return: A Flask Response object
         """
         data = request.json
+        data['user_id'] = session['user_id']
         message_id = Message.create(Message(**data))
-        print(message_id)
-        msg = Message.get(Message(message_id=message_id))
-        print(msg)
-        return vars(msg), 201
+        return {'message_id': message_id}, 201
 
     @classmethod
     def update(cls, message_id):
