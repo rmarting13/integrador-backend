@@ -13,8 +13,8 @@ class ChannelController:
         """
         data = request.json
         data['user_id'] = session['user_id']
-        Channel.create_channel(Channel(**data))
-        return {'message': 'Channel created successfully'}, 201
+        channel_id = Channel.create_channel(Channel(**data))
+        return {'channel_id': channel_id}, 201
 
     @classmethod
     def get(cls, channel_id):
@@ -85,6 +85,19 @@ class ChannelController:
         chan = Channel(server_id=server_id)
         result = Channel.get_all_channel_ofServer(chan)
         if result:
-            return result, 200
-        return NotFound
+            channels = []
+            for channel in result:
+                if channel.user_id == session['user_id']:
+                    channels.append({
+                        'channel': vars(channel),
+                        'owner': True
+                    })
+                else:
+                    channels.append({
+                        'channel': vars(channel),
+                        'owner': False
+                    })
+            return channels, 200
+        return {'error': 'Source not found'}, 404
+        # return NotFound
 

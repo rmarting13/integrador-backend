@@ -34,19 +34,19 @@ class DatabaseConnection:
         :return: A MySQLCursor instance
         """
         print(f'ESTADO DE LA CONEXIÓN AL EJECUTAR LA CONSULTA: {cls._CONNECTION}')
-        try:
-            cls.get_connection().autocommit = False
-            cursor = cls.get_connection().cursor()
-            cursor.execute(query, params)
-            cls.get_connection().commit()
-            last_row_id = cursor.lastrowid
-            cursor.close()
-            return last_row_id
-        except Exception as err:
-            cls.get_connection().rollback()
-            print(f'An error happened: {err}')
-        finally:
-            cls.close_connection()
+        # try:
+        cls.get_connection().autocommit = False
+        cursor = cls.get_connection().cursor()
+        cursor.execute(query, params)
+        cls.get_connection().commit()
+        last_row_id = cursor.lastrowid
+        cursor.close()
+        return last_row_id
+        # except Exception as err:
+        #     cls.get_connection().rollback()
+        #     print(f'An error happened: {err}')
+        # finally:
+        #     cls.close_connection()
 
     @classmethod
     def fetch_one(cls, query, params=None):
@@ -73,7 +73,9 @@ class DatabaseConnection:
         print(f'ESTADO DE LA CONEXIÓN ANTES DE FETCHALL: {cls._CONNECTION}')
         cursor = cls.get_connection().cursor()
         cursor.execute(query, params)
-        return cursor.fetchall()
+        result = cursor.fetchall()
+        # print('DATABASE', result)
+        return result
 
     @classmethod
     def close_connection(cls):

@@ -1,3 +1,5 @@
+from flask import session
+
 from app.database import DatabaseConnection as db
 
 
@@ -5,7 +7,7 @@ class Server:
 
     """A class which resprsent a Server data model
     """
-    def __init__(self, server_id=None, user_id=None, name=None, description=None, creation_date=None, members=1 ):
+    def __init__(self, server_id=None, user_id=None, role_id=None, name=None, description=None, creation_date=None, members=1 ):
         """
         :param server_id: (``int``)
         :param name (``str``)
@@ -16,6 +18,7 @@ class Server:
         
         self.server_id = server_id
         self.user_id = user_id
+        self.role_id = role_id
         self.name = name
         self.description = description
         self.creation_date = creation_date
@@ -58,7 +61,7 @@ class Server:
         attrs = 'server_id', 'name', 'description', 'creation_date'
         query = f"SELECT {', '.join(attrs)} FROM servers WHERE server_id= %s;"
         params = serv.server_id,
-        result = db.fetch_one (query=query, params=params)
+        result = db.fetch_one(query=query, params=params)
         if result:
             items = list(zip(attrs, result))
             kwargs = {}
@@ -68,11 +71,11 @@ class Server:
             query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
                     INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
             param = serv.server_id,
-            result = db.execute_query(query=query, params=param)
-            server.members = result
+            result = db.fetch_one(query=query, params=param)
+            server.members = result[0]
             query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
-            result = db.execute_query(query=query, params=param)
-            server.user_id = result
+            result = db.fetch_one(query=query, params=param)
+            server.user_id = result[0]
             return server
         return None
 
@@ -111,12 +114,16 @@ class Server:
                 query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
                         INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
                 param = server.server_id,
-                result = db.execute_query(query=query, params=param)
-                server.members = result
-                query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
-                result = db.execute_query(query=query, params=param)
-                server.user_id = result
+                result = db.fetch_one(query=query, params=param)
+                server.members = result[0]
+
+                query = """SELECT role_id FROM user_roles_servers WHERE server_id = %s AND user_id = %s;"""
+                param = server.server_id, session['user_id']
+                result = db.fetch_one(query=query, params=param)
+                if result:
+                    server.role_id = result[0]
                 servers.append(server)
+                print('MODEL: ', vars(server))
             return servers
         else:
             return None
@@ -188,12 +195,12 @@ class Server:
                 server = cls(**kwargs)
                 query = """SELECT COUNT(*) FROM users u INNER JOIN user_roles_servers urs ON u.user_id = urs.user_id 
                                     INNER JOIN servers s ON s.server_id = urs.server_id WHERE s.server_id = %s; """
-                param = serv.server_id,
-                result = db.execute_query(query=query, params=param)
-                server.members = result
+                param = server.server_id,
+                result = db.fetch_one(query=query, params=param)
+                server.members = result[0]
                 query = """SELECT user_id FROM user_roles_servers WHERE server_id = %s AND role_id = 1;"""
-                result = db.execute_query(query=query, params=param)
-                server.user_id = result
+                result = db.fetch_one(query=query, params=param)
+                server.user_id = result[0]
                 servers.append(server)
             return servers
         else:
@@ -210,6 +217,10 @@ class Server:
 
     @classmethod
     def left_server(cls, serv):
-        query = 'DELETE FROM user_roles_servers WHERE user_id = %s AND server_id = %;'
+        query = 'DELETE FROM user_roles_servers WHERE user_id = %s AND server_id = %s;'
         params = serv.user_id, serv.server_id
         db.execute_query(query=query, params=params)
+
+if __name__ == "__main__":
+
+    Server.get_all_server()

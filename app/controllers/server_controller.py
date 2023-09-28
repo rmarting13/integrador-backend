@@ -14,8 +14,8 @@ class ServerController:
 
         data = request.json
         data['user_id'] = session['user_id']
-        Server.create_server(Server(**data))
-        return {'message': 'Server created successfully'}, 201
+        server_id = Server.create_server(Server(**data))
+        return {'server_id': server_id}, 201
 
     @classmethod
     def get(cls, server_id):
@@ -25,6 +25,7 @@ class ServerController:
         :return: A Flask Response object
         """
         server = Server(server_id=server_id)
+        print(server_id)
         result = Server.get_server_id(server)
         if result:
             return server.serialize(), 200
@@ -42,8 +43,22 @@ class ServerController:
         else: 
             result = Server.get_all_server()
         if result:
+            # servers = []
+            # for reg in result:
+            #     if reg.user_id == session['user_id']:
+            #         servers.append({
+            #             'server': vars(reg),
+            #             'status': 1
+            #         })
+            #     elif :
+            #         servers.append({
+            #             'server': vars(reg),
+            #             'status': False
+            #         })
+            # return servers, 200
             return list(map(lambda u: vars(u), result)), 200
-        return NotFound
+        return {}, 404
+        # return NotFound
 
     @classmethod
     def update(cls, server_id):
@@ -70,7 +85,7 @@ class ServerController:
         return {}, 204
 
     @classmethod
-    def filtrer_server(cls, name):
+    def filter_server(cls, name):
         """
         
         """
@@ -87,6 +102,27 @@ class ServerController:
         serv = Server(user_id=session['user_id'])
         result = Server.get_all_server_ofUser(serv)
         if result:
-            return result, 200
-        return NotFound
+            servers = []
+            for reg in result:
+                if reg.user_id == session['user_id']:
+                    servers.append({'server': vars(reg), 'owner': True})
+                else:
+                    servers.append({'server': vars(reg), 'owner': False})
+            return servers, 200
+        else:
+            print('FALLA EL ENVIO')
+        return {}, 404
+        # return NotFound
 
+
+    @classmethod
+    def left(cls, server_id):
+        Server.left_server(Server(user_id=session['user_id'], server_id=server_id))
+        return {}, 204
+
+    @classmethod
+    def join(cls):
+        data = request.json
+        data['user_id'] = session['user_id']
+        Server.join_server(Server(**data))
+        return {'message': 'Server joined successfully'}, 201

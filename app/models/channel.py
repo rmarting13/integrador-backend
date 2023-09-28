@@ -35,7 +35,7 @@ class Channel:
         }
 
     @classmethod
-    def create_channel (cls, chan):
+    def create_channel(cls, chan):
         """create a new channel
            :param chan: An instance of Channel
            :return: None
@@ -135,7 +135,7 @@ class Channel:
         """
         query = "SELECT channel_id, server_id, name, description, creation_date FROM channels WHERE name LIKE %s"
         nam = chan.name,
-        param = f"%{nam}%"
+        param = f"%{nam}%",
         result = db.fetch_all(query=query, params=param)
         if result:
             return result
@@ -151,10 +151,13 @@ class Channel:
         """
         attrs = vars(Channel()).keys()
         query = f"SELECT {', '.join(attrs)} FROM channels WHERE server_id = %s;"
-        params = chan.server_id
+        params = chan.server_id,
         result = db.fetch_all(query=query, params=params)
         if result:
-            return result
+            channels = []
+            for reg in result:
+                channels.append(cls(*reg))
+            return channels
         return None
 
     

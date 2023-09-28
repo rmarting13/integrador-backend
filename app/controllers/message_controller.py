@@ -17,7 +17,8 @@ class MessageController:
         result = Message.get(message)
         if result:
             return vars(result), 200
-        return NotFound
+        return {'error': 'Source not found'}
+        # return NotFound
 
     @classmethod
     def get_all(cls):
@@ -37,7 +38,8 @@ class MessageController:
                 msg['owner'] = True if row.user_id == session['user_id'] else False
                 messages.append(msg)
             return messages, 200
-        return NotFound
+        return {'error': 'Source not found'}
+        # return NotFound
 
     @classmethod
     def create(cls):
@@ -83,4 +85,5 @@ class MessageController:
         result = Message.get_all_messages_of_channel(message)
         if result:
             return vars(result), 200
-        return NotFound
+        return {'error': 'Source not found'}
+        # return NotFound
