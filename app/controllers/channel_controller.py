@@ -27,7 +27,7 @@ class ChannelController:
         result = Channel.get_channel(chan)
         if result:
             return chan.serialize(), 200
-        return NotFound
+        raise NotFound("No channel found")
 
     @classmethod
     def get_all(cls):
@@ -42,7 +42,7 @@ class ChannelController:
             result = Channel.get_all_channel()
         if result:
             return list(map(lambda u: vars(u), result)), 200
-        return NotFound
+        raise NotFound("No channel found")
 
     @classmethod
     def update(cls, channel_id):
@@ -75,7 +75,7 @@ class ChannelController:
         result = Channel.filtrar_channel(chan)
         if result:
             return result
-        else: return NotFound
+        raise NotFound("Channer not found")
         
     @classmethod
     def get_all_channel_server(cls, server_id):
@@ -98,6 +98,6 @@ class ChannelController:
                         'owner': False
                     })
             return channels, 200
-        return {'error': 'Source not found'}, 404
+        raise NotFound("No channels found for this server")
         # return NotFound
 

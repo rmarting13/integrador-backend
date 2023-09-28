@@ -29,7 +29,7 @@ class ServerController:
         result = Server.get_server_id(server)
         if result:
             return server.serialize(), 200
-        return NotFound
+        raise NotFound("Server not found")
     
     @classmethod
     def get_all(cls):
@@ -57,7 +57,7 @@ class ServerController:
             #         })
             # return servers, 200
             return list(map(lambda u: vars(u), result)), 200
-        return {}, 404
+        else: raise NotFound("No servers found")
         # return NotFound
 
     @classmethod
@@ -93,6 +93,7 @@ class ServerController:
         result = Server.filtrar_server(serv)
         if result:
             return result
+        else: raise NotFound("No servers found matching the filter")
 
     @classmethod
     def get_all_server_ofUser(cls):
@@ -111,7 +112,7 @@ class ServerController:
             return servers, 200
         else:
             print('FALLA EL ENVIO')
-        return {}, 404
+            raise NotFound("No servers found for the current user")
         # return NotFound
 
 
