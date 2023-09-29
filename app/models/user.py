@@ -59,11 +59,14 @@ class User:
 
     @classmethod
     def already_exists(cls, user):
-        query = "SELECT username, email FROM users WHERE username = %s AND email = %s;"
-        params = (user.username, user.email)
+        query = "SELECT username FROM users WHERE username = %s;"
+        params = (user.username,)
         result = db.fetch_one(query=query, params=params)
-        if result:
-            return True
+        query = "SELECT email FROM users WHERE email = %s;"
+        params = (user.email,)
+        result1 = db.fetch_one(query=query, params=params)
+        if result or result1:
+                return True
         return False
 
     @classmethod
@@ -145,7 +148,7 @@ class User:
         """
         query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s);"
         params = user.username, user.password, user.email
-        db.execute_query(query=query, params=params)
+        return db.execute_query(query=query, params=params)
 
     @classmethod
     def update(cls, user):

@@ -26,8 +26,8 @@ class ChannelController:
         chan = Channel(channel_id=channel_id)
         result = Channel.get_channel(chan)
         if result:
-            return chan.serialize(), 200
-        return NotFound
+            return vars(result), 200
+        return {'error': 'Source not found'}
 
     @classmethod
     def get_all(cls):

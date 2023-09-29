@@ -98,9 +98,11 @@ class UserController:
         :return: A Flask Response object
         """
         data = request.json
+        print(data)
         user = User(**data)
         if not User.already_exists(user):
-            User.create(user)
+            session['user_id'] = User.create(user)
+            session['username'] = data.get('username')
             return {'message': 'User created successfully'}, 201
         return {'error': 'Username and email already exists'}, 400
 
