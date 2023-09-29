@@ -1,0 +1,94 @@
+USE chatify;
+INSERT INTO user_roles (role_name) VALUES ("admin"), ("member");
+
+INSERT INTO user_status (status_name) VALUES ("online"), ("offline");
+
+INSERT INTO users (status_id, username, password, email, first_name, last_name)
+VALUES 
+	(1, 'rmarting13', 1234, "rmarting13@gmail.com", "Martin", "Gonzalez"),
+	(1, 'nagusalta', 1234, "nagusalta@gmail.com", "Nahuel", "Barrera"),
+	(1, 'pperez', 1234, "pperez@gmail.com", "Pablo", "Pérez"),
+    (1, 'shud23', 1234, "saulhudson23@gmail.com", "Saul", "Hudson"),
+    (1, 'maripa8', 1234, "paumarigonz@gmail.com", "Paula", "Gonzalez"),
+    (1, "john_doe", "1234", "john.doe@email.com", "John", "Doe"),
+    (1, "sarah_smith", "1234", "sarah.smith@email.com", "Sarah", "Smith"),
+	(1, "michael_jones", "1234", "michael.jones@email.com", "Michael", "Jones"),
+	(1, "emily_adams", "1234", "emily.adams@email.com", "Emily", "Adams"),
+	(1, "david_wilson", "1234", "david.wilson@email.com", "David", "Wilson"),
+	(1, "laura_brown", "1234", "laura.brown@email.com", "Laura", "Brown"),
+	(1, "robert_anderson", "1234", "robert.anderson@email.com", "Robert", "Anderson"),
+	(1, "jessica_cook", "1234", "jessica.cook@email.com", "Jessica", "Cook"),
+	(1, "william_miller", "1234", "william.miller@email.com", "William", "Miller"),
+	(1, "olivia_martin", "1234", "olivia.martin@email.com", "Olivia", "Martin");
+
+INSERT INTO servers (name, description) 
+VALUES
+	('Music', 'A server to chat about artists, songs and music genders'),
+    ('Programming', 'A server to chat about programming languages and frameworks'),
+    ('Science', 'A server to chat about science topics'),
+    ('Technology','A server to chat about technology news and any gadget'),
+    ('Movies', 'A server to chat about movies, characters and film categories'),
+    ('Literature', 'A server to chat about books, authors and literature genders'),
+    ("TechTalk", "A community for tech enthusiasts"),
+	("MovieMania", "Discuss your favorite movies and TV shows"),
+	("BookWorms", "A place for book lovers to share their passion"),
+	("FitnessFreaks", "Get fit and stay healthy with us"),
+	("CookingCraze", "Share recipes and cooking tips with fellow foodies"),
+	("TravelBuddies", "Explore the world together"),
+	("MusicMakers", "For musicians and music lovers"),
+	("ArtisticExpressions", "Showcase your art and creativity"),
+    ("CodingCrew", "Connect with fellow programmers and code together"),
+	("NatureLovers", "Discuss and appreciate the beauty of nature"),
+	("MovieBuffHub", "A movie lover's paradise for reviews and discussions"),
+	("PetPals", "Share your love for pets and pet care tips"),
+	("PhotographyPassion", "Showcase your photography skills and learn from others"),
+	("FashionFusion", "All things fashion and style-related"),
+	("ScienceExplorers", "Explore the mysteries of science and technology"),
+	("EntrepreneurZone", "Connect with aspiring entrepreneurs and share ideas"),
+	("YogaJourney", "Embark on a journey of mindfulness and yoga practice"),
+	("BoardGameNights", "Host virtual board game nights with friends");
+    
+INSERT INTO user_roles_servers (user_id, role_id, server_id) 
+VALUES 
+	(1,1,1), (2,2,1), (3,2,1), (4,2,1) ,(5,2,1),
+	(1,1,2), (2,2,2), (3,2,2), (4,2,2) ,(5,2,2),
+    (1,2,3), (2,1,3), (3,2,3), (4,2,3) ,(5,2,3),
+    (1,2,4), (2,2,4), (3,1,4), (4,2,4) ,(5,2,4),
+    (1,2,5), (2,2,5), (3,2,5), (4,1,5) ,(5,2,5),
+    (1,2,6), (2,2,6), (3,2,6), (4,2,6) ,(5,1,6),
+    (2,1,7),(3,1,8),(3,1,19),(3,1,11),(1,2,7),
+    (6,2,5),(10,2,4),(3,1,12);
+    
+INSERT INTO channels (server_id, user_id, name, description)
+VALUES
+	(1, 1, "rock and roll", "la mejor musica del rock 70,80 y 90"),
+    (2, 3, "Python for ever", "todo relacionado a python se hablara en este canal"),
+    (3, 4, "Fisica Nuclear", "Oppenheimer nuestro dios"),
+    (4, 2, "Battery Litio", "todo sobre el oro blanco que llamamos litio"),
+    (5, 5, "Terror del mejor", "si te gusta el conjuro no eres bienvenido, SAL !"),
+    (7, 2, "Aplee esta sobrevalorado", " aca solo quienes usen android por favor"),
+    (8, 3, "GOT is GOD", "todo relacionado a la mejor serie Game of Throne"),
+    (2, 3, "JAVA el papi de todos", "Solo hablamos de java, no hay nada mejor"),
+    (19, 3, "gran angular", "si quieres aportar ideas sobre fotografias eres bienvenidx"),
+    (3, 11, "quimica Lover", "aclaracion no hablaremos de drogas ilegales"),
+    (1, 7, "rock argento","de Charly hasta Cerati, desde Iorio hasta luca, y asi..."),
+    (6, 5, "mejores best seller de ARG","si quieres debatir de literatura ven y unete"),
+    (10, 4, "creatina y nada mas","mejores rutinas y consejos de nutricion para aumentar esos musculos"),
+    (3, 12, "Matematicas hijoo..!!", "si solo sabes la tabla del 1, ven nosotros te enseñamos");
+    
+INSERT INTO messages (user_id, channel_id, content, edited)
+VALUES 
+	(1, 1, "buenas, alguna novedad de la gira de los rolling por arg?",0),
+    (2, 1, "todavia sin novedades, mas adelante seguro, paciencia",0),
+    (3, 3, "que tal la peli? alguna critica?",0),
+    (2, 3, "muy buena, Nolan se paso ",0),
+    (1, 3, "fua en el cine se sintio muy diferente" ,0),
+    (3, 2, "consulta, algun metodo para ordenar?", 0),
+    (1, 2, "podes usar el .sort ", 0),
+    (3, 1, "ya escucharon el ultimo tema que sacaron?" ,0),
+    (5, 1, "siii, muy buenoo", 0),
+    (2, 3, "muy bien implementadas esas camaras IMAX", 0),
+    (2, 5, "que tal la monja 2, vale la pena?", 0),
+    (1, 5, "si la ves en el cine si vale la pena", 0),
+    (3, 5, "para mi le falto algo, no asusta tanto como esperaba", 0),
+    (4, 5, "yo le doy un 7 de 10, tranqui", 0);
