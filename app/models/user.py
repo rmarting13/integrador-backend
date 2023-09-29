@@ -29,7 +29,7 @@ class User:
         self.phone_number = kwargs.get('phone_number', None)
         self.creation_date = kwargs.get('creation_date', None)
         self.last_login = kwargs.get('last_login', None)
-        self.profile_picture = kwargs.get('last_login', None)
+        self.profile_picture = kwargs.get('profile_picture', None)
 
     def __str__(self):
         """
@@ -49,57 +49,86 @@ class User:
                 """
 
     @classmethod
+    def is_registered(cls, user):
+        query = "SELECT user_id FROM users WHERE username = %s AND password = %s;"
+        params = (user.username, user.password)
+        result = db.fetch_one(query, params=params)
+        if result:
+            return result[0]
+        return False
+
+    @classmethod
+    def already_exists(cls, user):
+        query = "SELECT username FROM users WHERE username = %s;"
+        params = (user.username,)
+        result = db.fetch_one(query=query, params=params)
+        query = "SELECT email FROM users WHERE email = %s;"
+        params = (user.email,)
+        result1 = db.fetch_one(query=query, params=params)
+        if result or result1:
+                return True
+        return False
+
+    @classmethod
     def get(cls, user):
         """
         Gets the User model entry in database that matches the user_id provided
         :param user: An instance of User with a not null user_id
         :return: User or None
         """
-        query = "SELECT * FROM users WHERE user_id = %s;"
+        query = """SELECT user_id, status_id, username, password, email, first_name, last_name,
+                   creation_date, last_login FROM users WHERE user_id = %s;"""
         params = user.user_id,
         result = db.fetch_one(query=query, params=params)
         if result:
-            attrs = vars(user).keys()
-            items = list(zip(attrs, result))
-            kwargs = {}
-            for key, value in items:
-                kwargs.update({key: value})
-            return cls(**kwargs)
+            return User(
+                user_id=result[0],
+                status_id=result[1],
+                username=result[2],
+                password=result[3],
+                email=result[4],
+                first_name=result[5],
+                last_name=result[6],
+                creation_date=result[7],
+                last_login=result[8]
+            )
         else:
             return None
 
     @classmethod
-    def get_all(cls):
-        """
-        Gets a collection of all User entries existing in the database
-        :return: A User list or None
-        """
-        query = "SELECT * FROM users;"
-        result = db.fetch_all(query=query)
+    def get_picture(cls, user):
+        query = "SELECT profile_picture FROM users WHERE user_id = %s;"
+        params = user.user_id,
+        result = db.fetch_one(query=query, params=params)
         if result:
-            attrs = vars(User()).keys()
-            users = []
-            for row in result:
-                kwargs = {}
-                for key, value in zip(attrs, row):
-                    kwargs.update({key: value})
-                users.append(cls(**kwargs))
-            return users
-        else:
-            return None
+            return User(user_id=user.user_id, profile_picture=result[0])
+        return None
 
     @classmethod
-    def get_by_username(cls, user):
+    def get_all(cls, user=None):
         """
-        Gets all User entries from the database that matches the provided username
-        :param user: An instance of User with a not null username
+        Gets a collection of all User entries existing in the database or
+        those that matches user's data provided by param
         :return: A User list or None
         """
-        query = "SELECT * FROM users WHERE username LIKE %s ORDER BY username;"
-        params = '%' + user.username + '%',
-        result = db.fetch_all(query=query, params=params)
+        attrs = vars(User()).keys()
+        if user:
+            query_parts = []
+            params = []
+            for key, value in vars(user).items():
+                if value:
+                    query_parts.append(key)
+                    params.append('%'+value+'%')
+            if len(query_parts) > 1:
+                query = (f"SELECT {', '.join(attrs)} FROM users WHERE {query_parts.pop(0)}" +
+                         ' LIKE %s AND '.join(query_parts) + ";")
+            else:
+                query = f"SELECT {', '.join(attrs)} FROM users WHERE {query_parts.pop()} LIKE %s;"
+            result = db.fetch_all(query=query, params=params)
+        else:
+            query = f"SELECT {', '.join(attrs)} FROM users;"
+            result = db.fetch_all(query=query)
         if result:
-            attrs = vars(User()).keys()
             users = []
             for row in result:
                 kwargs = {}
@@ -119,7 +148,7 @@ class User:
         """
         query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s);"
         params = user.username, user.password, user.email
-        db.execute_query(query=query, params=params)
+        return db.execute_query(query=query, params=params)
 
     @classmethod
     def update(cls, user):
@@ -155,10 +184,74 @@ class User:
 
 if __name__ == '__main__':
 
-    obj = User(
-        user_id=1,
+    obj1 = User(
+        status_id=1,
+        username='obito',
+        password='1234',
+        email='obichiha@outlook.com',
+        phone_number='3216541',
     )
-    print(vars(obj))
+    obj2 = User(
+        status_id=1,
+        username='rasen86',
+        password='1234',
+        email='naruzumaki@gmail.com',
+        phone_number='3216541',
+    )
+    obj3 = User(
+        status_id=0,
+        username='sasuke_kun21',
+        password='1234',
+        email='sasukeuchiha@gmail.com',
+        phone_number='3216541',
+    )
+    obj4 = User(
+        status_id=1,
+        username='sakurachan',
+        password='1234',
+        email='sakura_21@outlook.com',
+        phone_number='3216541',
+    )
+    obj5 = User(
+        status_id=0,
+        username='madarachiha',
+        password='1234',
+        email='madara_uchiha@outlook.com',
+        phone_number='3216541',
+    )
+    obj6 = User(
+        status_id=0,
+        username='kakashi21',
+        password='1234',
+        email='kakashisensei@gmail.com',
+        phone_number='3216541',
+    )
+    obj7 = User(
+        status_id=0,
+        username='orochi21',
+        password='1234',
+        email='orochimaru_senin@gmail.com',
+        phone_number='3216541',
+    )
+    obj8 = User(
+        status_id=1,
+        username='erosenin',
+        password='1234',
+        email='jiraija@outlook.com',
+        phone_number='3216541',
+    )
+    obj9 = User(
+        status_id=1,
+        username='innoyam',
+        password='1234',
+        email='inno_yamanaka@outlook.com',
+        phone_number='3216541',
+    )
+    # to_create = [obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]
+    # for obj in to_create:
+    #     User.create(obj)
+
+    # print(vars(obj))
     # User.update(obj)
     # user = User.get(obj)
     # print(user)
@@ -166,4 +259,8 @@ if __name__ == '__main__':
 
     # user = User.get(obj)
     # print(type(user.creation_date))
-    #print(*users, sep='\n')
+    result = User.get_all(User(username='martin'))
+    print(result[0])
+    # users = User.get_all(user)
+    # if users:
+    #     print(*users, sep=''.center(50, '-'))
