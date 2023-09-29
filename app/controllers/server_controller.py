@@ -25,10 +25,10 @@ class ServerController:
         :return: A Flask Response object
         """
         server = Server(server_id=server_id)
-        print(server_id)
         result = Server.get_server_id(server)
         if result:
-            return server.serialize(), 200
+            print(vars(result))
+            return vars(result), 200
         return NotFound
     
     @classmethod

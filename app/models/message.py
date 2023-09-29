@@ -123,12 +123,16 @@ class Message:
         """
         
         """
-        query = "SELECT content FROM messages WHERE channel_id = %s;"
+        query = """SELECT message_id, messages.user_id, username, channel_id, content, messages.creation_date, edited 
+                    FROM messages INNER JOIN users ON users.user_id = messages.user_id WHERE channel_id = %s;"""
         params = message.channel_id,
         result = db.fetch_all(query=query, params=params)
         if result:
-            return result
-        else: return None
+            messages = []
+            for msg in result:
+                messages.append(Message(*msg))
+            return messages
+        return None
 
 if __name__ == '__main__':
 

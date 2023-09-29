@@ -84,6 +84,11 @@ class MessageController:
         message = Message(channel_id = channel_id)
         result = Message.get_all_messages_of_channel(message)
         if result:
-            return vars(result), 200
-        return {'error': 'Source not found'}
+            messages = []
+            for row in result:
+                msg = vars(row)
+                msg['owner'] = True if row.user_id == session['user_id'] else False
+                messages.append(msg)
+            return messages, 200
+        return {'error': 'Source not found'}, 404
         # return NotFound
